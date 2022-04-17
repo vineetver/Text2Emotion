@@ -1,6 +1,4 @@
-# Textual Emotion Detection
-
-### About the dataset
+## About The Project
 
 GoEmotions is a corpus of 58k carefully curated comments extracted from Reddit, with human annotations to 27 emotion categories or Neutral.
 
@@ -15,3 +13,58 @@ Size of validation dataset: 5,426.
 The emotion categories are: admiration, amusement, anger, annoyance, approval, caring, confusion, curiosity, desire, disappointment, disapproval, disgust, embarrassment, excitement, fear, gratitude, grief, joy, love, nervousness, optimism, pride, realization, relief, remorse, sadness, surprise.
 
 For more details about [GoEmotions](https://github.com/google-research/google-research/tree/master/goemotions)  
+
+In this project I built a web application that uses natural language processing to identify emotions of a given text. The application is able to identify 7 emotions according to the ekman emotion map.
+
+## Getting Started
+
+### Dependancies
+
+List of all the libraries you need to run the code.
+
+  ```sh
+nltk
+emoji
+tensorflow
+transformers
+pandas
+sklearn
+matplotlib
+seaborn
+  ```
+
+
+<!-- USAGE EXAMPLES -->
+## Usage
+
+  ```sh
+  $ conda create -n "env-name" python=3.x, anaconda, nltk, emoji, tensorflow, transformers
+ 
+  $ conda activate "env-name"
+  
+  $ cd Emotion
+  
+  $ jupyter notebook
+  ```
+
+## Roadmap
+
+- [x] Preprocessing
+- [x] Visualization
+- [x] Model Creation
+- [x] Model Training
+- [x] Evaluation
+- [ ] Hyperparameter tuning
+- [ ] Model Training
+- [ ] Evaluation
+- [ ] Web application
+
+
+## License
+
+Distributed under the MIT License. See `LICENSE.md` for more information.
+
+
+## Contact
+
+Vineet Verma - vineetver@hotmail.com - [Goodbyeweekend.io](https://www.goodbyeweekend.io/)
