@@ -1,6 +1,8 @@
 ## About
 
-GoEmotions is a corpus of 58k carefully curated comments extracted from Reddit, with human annotations to 27 emotion categories or Neutral.
+I built a web application that uses natural language processing to identify emotions of a given text. The application is able to identify 7 emotions according to the ekman emotion map.
+
+The model is trained on GoEmotions. GoEmotions is a corpus of 58k carefully curated comments extracted from Reddit, with human annotations to 27 emotion categories or Neutral.
 
 Number of examples: 58,009.
 Number of labels: 27 + Neutral.
@@ -14,7 +16,7 @@ The emotion categories are: admiration, amusement, anger, annoyance, approval, c
 
 For more details about [GoEmotions](https://github.com/google-research/google-research/tree/master/goemotions)  
 
-In this project I built a web application that uses natural language processing to identify emotions of a given text. The application is able to identify 7 emotions according to the ekman emotion map.
+
 
 ## Getting Started
 
