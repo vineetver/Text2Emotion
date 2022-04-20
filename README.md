@@ -56,9 +56,9 @@ seaborn
 - [x] Model Creation
 - [x] Model Training
 - [x] Evaluation
-- [ ] Hyperparameter tuning
-- [ ] Model Training
-- [ ] Evaluation
+- [x] Hyperparameter tuning
+- [x] Model Training
+- [x] Evaluation
 - [ ] Web application
 
 
