@@ -48,6 +48,10 @@ seaborn
   
   $ jupyter notebook
   ```
+  
+## View code
+
+[NBViewer](https://nbviewer.org/github/vineetver/Emotion/blob/main/Textual_emotion_detection.ipynb)
 
 ## Roadmap
 
