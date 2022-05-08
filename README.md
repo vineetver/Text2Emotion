@@ -52,14 +52,7 @@ For more details about [GoEmotions](https://github.com/google-research/google-re
 
 ## Roadmap
 
-- [x] Preprocessing
-- [x] Visualization
-- [x] Model Creation
-- [x] Model Training
-- [x] Evaluation
-- [x] Hyperparameter tuning
-- [x] Model Training
-- [x] Evaluation
+- [x] Prototype
 - [ ] Pipeline
 - [ ] Web application
 - [ ] Deployment
