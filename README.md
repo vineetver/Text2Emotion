@@ -1,57 +1,54 @@
-## About
+<h2 align="center"> Text2Emotion </h2>
 
-I built a web application that uses natural language processing to identify emotions of a given text. The application is able to identify 7 emotions according to the ekman emotion map.
+## Task Description
 
-The model is trained on GoEmotions. GoEmotions is a corpus of 58k carefully curated comments extracted from Reddit, with human annotations to 27 emotion categories or Neutral.
+The task is to build a **machine learning pipeline** that uses **natural language processing** to predict the emotion
+of a text. This is a **multi-label classification** task. The labels are 7 emotions: **anger, disgust, fear, joy,
+sadness, surprise, and neutral**. To evaluate the performance of the model **F1 score** is used.
 
-Number of examples: 58,009.
-Number of labels: 27 + Neutral.
+The current best model is a `fine-tuned BERT` with `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`,
+and `ExponentialDecay` scheduler. The evaluation F1 score is `63%`
+
+## About the Data
+
+The model is trained on GoEmotions. GoEmotions is a corpus of 58k carefully curated comments extracted from Reddit, with
+human annotations to 27 emotion categories or Neutral.
+
+- Number of examples: 58,009.
+- Number of labels: 27 + Neutral.
+
 Maximum sequence length in training and evaluation datasets: 30.
-On top of the raw data, they also include a version filtered based on reter-agreement, which contains a train/test/validation split:
+On top of the raw data, they also include a version filtered based on reter-agreement, which contains a
+train/test/validation split:
 
-Size of training dataset: 43,410.
-Size of test dataset: 5,427.
-Size of validation dataset: 5,426.
-The emotion categories are: admiration, amusement, anger, annoyance, approval, caring, confusion, curiosity, desire, disappointment, disapproval, disgust, embarrassment, excitement, fear, gratitude, grief, joy, love, nervousness, optimism, pride, realization, relief, remorse, sadness, surprise.
+- Size of training dataset: 43,410.
+- Size of test dataset: 5,427.
+- Size of validation dataset: 5,426.
 
-For more details about [GoEmotions](https://github.com/google-research/google-research/tree/master/goemotions)  
+The emotion categories are: admiration, amusement, anger, annoyance, approval, caring, confusion, curiosity, desire,
+disappointment, disapproval, disgust, embarrassment, excitement, fear, gratitude, grief, joy, love, nervousness,
+optimism, pride, realization, relief, remorse, sadness, surprise.
 
-
-
-## Getting Started
-
-### Dependancies
-
-List of all the libraries you need to run the code.
-
-  ```sh
-nltk
-emoji
-tensorflow
-transformers
-pandas
-sklearn
-matplotlib
-seaborn
-  ```
+For more details about [GoEmotions](https://github.com/google-research/google-research/tree/master/goemotions)
 
 
-<!-- USAGE EXAMPLES -->
-## Usage
+## Dependencies
 
-  ```sh
-  $ conda create -n "env-name" python=3.x, anaconda, nltk, emoji, tensorflow, transformers
- 
-  $ conda activate "env-name"
-  
-  $ cd Emotion
-  
-  $ jupyter notebook
-  ```
-  
-## View code
+    $ pip install -r requirements.txt
 
-[NBViewer](https://nbviewer.org/github/vineetver/Emotion/blob/main/Textual_emotion_detection.ipynb)
+
+
+[//]: # (## Running the pipeline)
+
+[//]: # ()
+[//]: # (    $ git clone repo.git)
+
+[//]: # (    $ cd repo)
+
+
+## Running the tests
+
+    py.test tests
 
 ## Roadmap
 
@@ -63,8 +60,9 @@ seaborn
 - [x] Hyperparameter tuning
 - [x] Model Training
 - [x] Evaluation
+- [ ] Pipeline
 - [ ] Web application
-
+- [ ] Deployment
 
 ## License
 
@@ -74,3 +72,4 @@ Distributed under the MIT License. See `LICENSE.md` for more information.
 ## Contact
 
 Vineet Verma - vineetver@hotmail.com - [Goodbyeweekend.io](https://www.goodbyeweekend.io/)
+
