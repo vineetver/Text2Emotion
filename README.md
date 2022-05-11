@@ -2,7 +2,7 @@
 
 ## Task Description
 
-The task is to build a **machine learning pipeline** that uses **natural language processing** to predict the emotion
+The task is to build a **web application** that uses **natural language processing** to predict the emotion
 of a text. This is a **multi-label classification** task. The labels are 7 emotions: **anger, disgust, fear, joy,
 sadness, surprise, and neutral**. To evaluate the performance of the model **F1 score** is used.
 
