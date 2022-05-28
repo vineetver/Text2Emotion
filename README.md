@@ -7,7 +7,7 @@ of a text. This is a **multi-label classification** task. The labels are 7 emoti
 sadness, surprise, and neutral**. To evaluate the performance of the model **F1 score** is used.
 
 The current best model is a `fine-tuned BERT` with `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`,
-and `ExponentialDecay` scheduler. The evaluation F1 score is `63%`
+and `ExponentialDecay` scheduler. The evaluation precision score is 82%. I chose precision as my metric because I want my model to be precise. 
 
 ## About the Data
 
