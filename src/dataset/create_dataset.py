@@ -1,6 +1,7 @@
 import os
 
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
 
 def read_dataset(train_url: str, test_url: str, valid_url: str) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -39,6 +40,57 @@ def read_dataset(train_url: str, test_url: str, valid_url: str) -> tuple[pd.Data
                            encoding='utf-8',
                            names=['text', 'emotion', 'annotator'],
                            header=None)
+
+    return train_df, test_df, valid_df
+
+
+def combine_dataset(train_df: pd.DataFrame, test_df: pd.DataFrame, valid_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    This function combines the train, test and valid datasets.
+
+    Parameters
+    ----------
+    train_df : pd.DataFrame
+        train dataset
+    test_df : pd.DataFrame
+        test dataset
+    valid_df : pd.DataFrame
+        valid dataset
+
+    Returns
+    -------
+    combined_df : pd.DataFrame
+        combined dataset
+    """
+    combined_df = pd.concat([train_df, test_df, valid_df])
+
+    return combined_df
+
+
+def split_dataset(df: pd.DataFrame, test_size: float = 0.2) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    """
+    This function splits the dataset into train, test and valid.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        dataset to be split
+    test_size : float, optional
+        size of the test dataset, by default 0.2
+
+    Returns
+    -------
+    train_df : pd.DataFrame
+        train dataset
+    test_df : pd.DataFrame
+        test dataset
+    valid_df : pd.DataFrame
+        valid dataset
+    """
+    train_df, test_df = train_test_split(df, test_size=test_size, random_state=42)
+    train_df, valid_df = train_test_split(train_df, test_size=test_size, random_state=42)
+
+    print(f'The dataframe was split into train: {train_df.shape} and valid: {valid_df.shape} and test: {test_df.shape}')
 
     return train_df, test_df, valid_df
 
