@@ -16,7 +16,8 @@ setup(
         'matplotlib',
         'plotly',
         'seaborn',
-        'pyspark'],
+        'pyspark',
+        'jupyter'],
     entry_points={
         'console_scripts': [
             'clean_data = main.clean:main',
