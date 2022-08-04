@@ -1,13 +1,13 @@
 <h2 align="center"> Text2Emotion </h2>
 
-## Task Description
+## Description
 
-The task is to build a **web application** that uses **natural language processing** to predict the emotion
-of a text. This is a **multi-label classification** task. The labels are 7 emotions: **anger, disgust, fear, joy,
-sadness, surprise, and neutral**. To evaluate the performance of the model **F1 score** is used.
+The task is to build a web application that uses **natural language processing** to predict the emotion
+of a text. This is a multi-label classification task. The labels are 7 emotions: anger, disgust, fear, joy,
+sadness, surprise, and neutral. To evaluate the performance of the model F1 score is used.
 
 The current best model is a `fine-tuned BERT` with `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`,
-and `ExponentialDecay` scheduler. The evaluation precision score is 82%. I chose precision as my metric because I want a highly precise model. 
+and `ExponentialDecay` scheduler. The evaluation precision score is 82%. Choose between precision and recall for your usecase. 
 
 ## About the Data
 
