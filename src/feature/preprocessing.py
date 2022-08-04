@@ -1,3 +1,7 @@
+import re
+import string
+
+import emoji
 import pandas as pd
 
 labels = {
@@ -58,19 +62,19 @@ def drop_annotator_column(df: pd.DataFrame) -> pd.DataFrame:
     Parameters
     ----------
     df : pd.DataFrame
-        pandas dataframe of the dataset
+        dataset
 
     Returns
     -------
-    df : pd.DataFrame
-        pandas dataframe of the dataset without the annotator column
+    df: pd.DataFrame
+        dataset without annotator column
     """
-    df = df.drop(columns=['annotator'], axis=1, inplace=True)
+    df = df.drop(columns=['annotator'], axis=1)
 
     return df
 
 
-def str_to_index(df: pd.DataFrame) -> pd.Series:
+def str_to_index(df: pd.DataFrame) -> pd.DataFrame:
     """
     This function converts a string of class indices to a list of class indices
     e.g. 0 -> [0]
@@ -78,18 +82,18 @@ def str_to_index(df: pd.DataFrame) -> pd.Series:
 
     Parameters
     ----------
-    df : pd.DataFrame
-        train/test/valid dataset
+    df: pd.DataFrame
+        dataset
 
     Returns
     -------
-    list_of_indices : pd.Series
-        List of class indices as a pandas series
+    df : pd.DataFrame
+        dataset with class indices as list
     """
 
-    list_of_emotions = df['emotion'].apply(lambda x: x.split(','))
+    df['list_of_emotions'] = df['emotion'].apply(lambda x: x.split(','))
 
-    return list_of_emotions
+    return df
 
 
 def index_to_class(index: list) -> list:
@@ -181,3 +185,26 @@ def sentiment_mapping(class_labels: list) -> list:
             sentiment_class_label.append('ambiguous')
 
     return sentiment_class_label
+
+
+def clean_text(text: str) -> str:
+    """
+    This function cleans the text by removing the punctuation, emojis, and special characters.
+
+    Parameters
+    ----------
+    text : str
+        Text to be cleaned
+
+    Returns
+    -------
+    text : str
+        text without punctuation and special characters
+    """
+
+    text = emoji.demojize(text)  # remove emojis
+    text = str(text).lower()  # text to lower case
+    text = re.sub(r'[%s]' % re.escape(string.punctuation), ' ', text)  # remove punctuation
+
+    return text
+
