@@ -270,6 +270,7 @@ def apply_clean_text(df: pd.DataFrame) -> pd.DataFrame:
 def one_hot_encode(df: pd.DataFrame) -> pd.DataFrame:
     """
     This function one-hot encodes the class labels.
+    e.g. ['neutral'] ->	[0 0 0 0 0 0 1]
 
     Parameters
     ----------

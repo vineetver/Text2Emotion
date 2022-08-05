@@ -40,12 +40,6 @@ class Models(ABC):
         """
         pass
 
-    def split(self, df: pd.DataFrame):
-        """
-        Split the dataframe into training, testing and validation sets.
-        """
-        pass
-
     def fit(self, X, Y):
         """
         Fit the model to the training data.
