@@ -95,7 +95,7 @@ def split_dataset(df: pd.DataFrame, test_size: float = 0.2) -> tuple[pd.DataFram
     return train_df, test_df, valid_df
 
 
-def write_dataset(train_df: pd.DataFrame, test_df: pd.DataFrame, valid_df: pd.DataFrame) -> None:
+def write_dataset(train_df: pd.DataFrame, test_df: pd.DataFrame, valid_df: pd.DataFrame, url: str = None) -> None:
     """
     This function writes the training/testing/validation dataset to the url
     and returns a pandas dataframe.
@@ -108,18 +108,18 @@ def write_dataset(train_df: pd.DataFrame, test_df: pd.DataFrame, valid_df: pd.Da
         pandas dataframe of the testing dataset
     valid_df : pd.DataFrame
         pandas dataframe of the validation dataset
-    train_url : str
-        url of the training dataset
-    test_url : str
-        url of the testing dataset
-    valid_url : str
-        url of the validation dataset
+    url: str, optional
+        url for different stages of the dataset, by default None
+        e.g. preprocess, clean etc.
 
     Returns
     -------
     None
     """
     path = '../data/'
+
+    if url is not None:
+        path = os.path.join(path, url)
 
     train_path = os.path.join(path, 'train.csv')
     test_path = os.path.join(path, 'test.csv')
