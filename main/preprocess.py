@@ -33,11 +33,7 @@ def main():
     # one-hot encode the class labels
     df = one_hot_encode(df)
 
-    # split the dataset into training, testing, and validation datasets
-    train_df, test_df, valid_df = split_dataset(df)
-
-    # write the training, testing, and validation datasets to '/data'
-    write_dataset(train_df, valid_df, test_df)
+    df.to_csv('../data/preprocessed.csv', sep='\t', encoding='utf-8')
 
 
 if __name__ == "__main__":
