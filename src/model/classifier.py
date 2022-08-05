@@ -7,14 +7,14 @@ from keras.initializers.initializers_v2 import TruncatedNormal
 from keras.layers import Input, Dense, Dropout
 from keras.models import Model
 from tensorflow.python.ops.gen_dataset_ops import BatchDataset
-from transformers import TFBertModel, BertTokenizerFast, BertConfig
+from transformers import TFBertModel, BertTokenizerFast, BertConfig, TFBertForSequenceClassification
 
 from src.feature.preprocessing import ekman_map, clean_text
 
 model_name = 'bert-base-uncased'
 config = BertConfig.from_pretrained(model_name, output_hidden_states=False)
 tokenizer = BertTokenizerFast.from_pretrained(pretrained_model_name_or_path=model_name, config=config)
-transformer_model = TFBertModel.from_pretrained(model_name, config=config)
+transformer_model = TFBertForSequenceClassification.from_pretrained(model_name, config=config)
 
 
 class Models(ABC):
@@ -22,11 +22,8 @@ class Models(ABC):
     Abstract class for a model.
     """
 
-    def __init__(self, features: list[str] = None, labels: list[str] = None, params: dict = None):
-        self.features = features
-        self.labels = labels
+    def __init__(self, params: dict = None):
         self.params = params
-        self.model = None
 
     def preprocess(self, df: pd.DataFrame):
         """
@@ -58,16 +55,21 @@ class BERT(Models, ABC):
     Pre-trained BERT model
     """
 
-    def __init__(self, features: str = None, labels: list[str] = None, params: dict = None):
+    def __init__(self, params: dict = None):
         """
-        Initialize the BERT model with the features, labels and parameters.
+        Initialize the BERT model with parameters.
 
         Args:
-            features: list of features
-            labels: list of labels
             params: dictionary of parameters
         """
-        super().__init__(features, labels, params)
+        super().__init__(params)
+        self.model = self.build_model()
+        self.features = 'text'
+        self.labels = ekman_map.keys()
+        if params['max_length'] is None:
+            self.params['max_length'] = 33
+        if params['batch_size'] is None:
+            self.params['batch_size'] = 32
 
     def tokenize(self, df: pd.DataFrame) -> tuple[tf.Tensor, np.ndarray]:
         """
@@ -149,7 +151,7 @@ class BERT(Models, ABC):
 
         # layers
         bert_model = bert(inputs)[1]
-        dropout = Dropout(0.25, name='pooled_output')
+        dropout = Dropout(0.23, name='pooled_output')
         pooled_output = dropout(bert_model, training=False)
         linear = Dense(config.hidden_size, name='linear')(pooled_output)
 

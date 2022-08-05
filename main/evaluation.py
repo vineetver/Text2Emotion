@@ -12,15 +12,10 @@ def main():
     # Load data
     df = pd.read_csv('../data/preprocessed.csv', sep='\t', encoding='utf-8')
 
-    # features and labels
-    features = 'text'
-    labels = ekman_map.keys()
-
-    # split data into training, testing and validation sets
     train_df, test_df, val_df = split_dataset(df, test_size=0.1)
 
     # initialize BERT model
-    bert = BERT(features=features, labels=labels, params={'max_length': 33, 'batch_size': 32})
+    bert = BERT()
 
     # tokenize test set
     test_tokenized, y_test = bert.tokenize(df=test_df)
@@ -38,7 +33,7 @@ def main():
     loss = tf.keras.losses.BinaryCrossentropy(from_logits=False)
 
     # load model
-    model = bert.build_model()
+    model = bert.model
     model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
     model.load_weights('../model/bert_model.hdf5')
 
