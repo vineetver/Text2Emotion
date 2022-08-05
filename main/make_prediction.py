@@ -1,4 +1,5 @@
 from keras.models import load_model
+import tensorflow as tf
 
 THRESHOLD = 0.83
 PROMPT = [
@@ -9,7 +10,7 @@ PROMPT = [
 
 
 def main():
-    bert = load_model('../model/bert_model.h5')
+    bert = tf.keras.models.load_model('../model/bert_model.hdf5')
 
     pred, prob = bert.predict(prompt=PROMPT, threshold=THRESHOLD, model=bert)
 

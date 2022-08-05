@@ -27,7 +27,7 @@ def main():
     test_tensor = bert.return_tensor(tokenized_input=test_tokenized, labels=y_test)
 
     # load model
-    model = load_model('../model/bert_model.h5')
+    model = load_model('../model/bert_model.hdf5')
 
     # evaluate model
     model.evaluate(test_tensor)

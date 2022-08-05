@@ -98,22 +98,27 @@ class BERT(Models, ABC):
 
         return tokenized, Y
 
-    def return_tensor(self, tokenized_input: tf.Tensor, labels: np.ndarray) -> BatchDataset:
+    def return_tensor(self, tokenized_input: tf.Tensor, labels: np.ndarray, shuffle: int = None) -> BatchDataset:
         """
         Return the tensor for the model.
 
         Args:
             tokenized_input: tokenized data
             labels: labels
+            shuffle: shuffle the data
 
         Returns:
             tensor: the input tensor
+
         """
         inputs = {'input_ids'     : tokenized_input['input_ids'],
                   'attention_mask': tokenized_input['attention_mask'],
                   'token_type_ids': tokenized_input['token_type_ids']}
 
-        tensor = tf.data.Dataset.from_tensor_slices((inputs, labels)).batch(self.params['batch_size'])
+        if shuffle is not None:
+            tensor = tf.data.Dataset.from_tensor_slices((inputs, labels)).batch(self.params['batch_size']).shuffle(shuffle).prefetch(1)
+        else:
+            tensor = tf.data.Dataset.from_tensor_slices((inputs, labels)).batch(self.params['batch_size']).prefetch(1)
 
         return tensor
 
@@ -150,7 +155,7 @@ class BERT(Models, ABC):
 
         # layers
         bert_model = bert(inputs)[1]
-        dropout = Dropout(config.hidden_dropout_prob, name='pooled_output')
+        dropout = Dropout(0.3, name='pooled_output')
         pooled_output = dropout(bert_model, training=False)
 
         # output
