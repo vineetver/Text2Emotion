@@ -1,5 +1,6 @@
 import re
 import string
+from typing import Any
 
 import emoji
 import pandas as pd
@@ -96,7 +97,7 @@ def str_to_index(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def index_to_class(index: list) -> list:
+def index_to_class(index_list: list) -> list[str | Any]:
     """
     This function converts a list indices to a list of class labels
     e.g. [0] -> ['admiration']
@@ -104,19 +105,38 @@ def index_to_class(index: list) -> list:
 
     Parameters
     ----------
-    index : list
-        List of class indices
+    index_list: list
+        List of indices
 
     Returns
     -------
-    class_labels : list
-        List of class labels
+    pd.DataFrame
+        dataset with class labels as list
     """
     class_labels = []
-    for i in index:
+    for i in index_list:
         class_labels.append(labels[int(i)])
 
     return class_labels
+
+
+def apply_index_to_class(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    This function applies the index_to_class function to the class column.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        dataset
+
+    Returns
+    -------
+    df : pd.DataFrame
+        dataset with class labels as list
+    """
+    df['emotion'] = df['list_of_emotions'].apply(lambda x: index_to_class(x))
+
+    return df
 
 
 def emotion_mapping(class_labels: list) -> list:
@@ -155,6 +175,25 @@ def emotion_mapping(class_labels: list) -> list:
             ekman_class_label.append('neutral')
 
     return ekman_class_label
+
+
+def apply_ekman_mapping(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    This function applies the emotion_mapping function to the class column.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        dataset
+
+    Returns
+    -------
+    df : pd.DataFrame
+        dataset with class labels mapped to ekman class labels
+    """
+    df['ekman_emotion'] = df['emotion'].apply(lambda x: emotion_mapping(x))
+
+    return df
 
 
 def sentiment_mapping(class_labels: list) -> list:
@@ -208,3 +247,41 @@ def clean_text(text: str) -> str:
 
     return text
 
+
+def apply_clean_text(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    This function applies the clean_text function to the text column.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        dataset
+
+    Returns
+    -------
+    df : pd.DataFrame
+        dataset with text column cleaned
+    """
+    df['text'] = df['text'].apply(lambda x: clean_text(x))
+
+    return df
+
+
+def one_hot_encode(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    This function one-hot encodes the class labels.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        dataset
+
+    Returns
+    -------
+    df : pd.DataFrame
+        dataset with one-hot encoded class labels
+    """
+    for label in ekman_map:
+        df[label] = df['ekman_emotion'].apply(lambda x, y=label: 1 if y in x else 0)
+
+    return df
