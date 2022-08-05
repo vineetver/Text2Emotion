@@ -2,10 +2,9 @@ import pandas as pd
 from keras.models import load_model
 
 from src.dataset.create_dataset import split_dataset
-from src.model.classifier import BERT
 from src.feature.preprocessing import ekman_map
+from src.model.classifier import BERT
 
-THRESHOLD = 0.83
 
 def main():
     # Load data
@@ -30,9 +29,8 @@ def main():
     # load model
     model = load_model('../model/bert_model.h5')
 
-
-
-
+    # evaluate model
+    model.evaluate(test_tensor)
 
 
 if __name__ == "__main__":

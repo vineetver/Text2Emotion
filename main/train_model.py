@@ -1,13 +1,14 @@
 import pandas as pd
-from src.model.classifier import BERT
+import tensorflow as tf
+
 from src.dataset.create_dataset import split_dataset
 from src.feature.preprocessing import ekman_map
+from src.model.classifier import BERT
 
 
 def main():
     # Load data
-    df = pd.read_csv('../data/preprocessed.csv', sep='\t',
-                     encoding='utf-8')
+    df = pd.read_csv('../data/preprocessed.csv', sep='\t', encoding='utf-8')
 
     # features and labels
     features = 'text'
@@ -28,7 +29,24 @@ def main():
     test_tensor = bert.return_tensor(tokenized_input=test_tokenized, labels=y_test)
     val_tensor = bert.return_tensor(tokenized_input=val_tokenized, labels=y_val)
 
+    # build model
+    model = bert.build_model()
 
+    # optimizer and loss function
+    learning_rate = tf.keras.optimizers.schedules.ExponentialDecay(
+        initial_learning_rate=5e-5,
+        decay_rate=0.7,
+        decay_steps=340,
+        staircase=True)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=learning_rate)
+    loss = tf.keras.losses.BinaryCrossentropy(from_logits=False)
+
+    # train model
+    model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+    model.fit(train_tensor, epochs=10, validation_data=val_tensor)
+
+    # save model
+    model.save('../model/bert_model.h5')
 
 
 if __name__ == "__main__":
