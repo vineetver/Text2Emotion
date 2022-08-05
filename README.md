@@ -9,6 +9,10 @@ sadness, surprise, and neutral. To evaluate the performance of the model F1 scor
 The current best model is a `fine-tuned BERT` with `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`,
 and `ExponentialDecay` scheduler. The evaluation precision score is 82%. Choose between precision and recall for your usecase. 
 
+## Model Architecture
+
+![model_png](https://github.com/vineetver/Text2Emotion/blob/main/model.png)
+
 ## About the Data
 
 The model is trained on GoEmotions. GoEmotions is a corpus of 58k carefully curated comments extracted from Reddit, with
