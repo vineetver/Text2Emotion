@@ -57,7 +57,7 @@ For more details about [GoEmotions](https://github.com/google-research/google-re
 ## Roadmap
 
 - [x] Prototype
-- [ ] Pipeline
+- [x] Pipeline
 - [ ] Web application
 - [ ] Deployment
 
