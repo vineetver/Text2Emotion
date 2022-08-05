@@ -162,18 +162,19 @@ class BERT(Models, ABC):
 
         return model
 
-    def predict(self, prompt: str, threshold: float):
+    def predict(self, prompt: list[str], threshold: float, model: Model) -> tuple[pd.DataFrame, pd.DataFrame]:
         """
         Predict the emotion of the text.
 
         Args:
             prompt: text
             threshold: threshold for the prediction
+            model: trained bert model
 
         Returns:
             emotion: emotion
         """
-        text = [clean_text(prompt) for text in prompt]
+        text = [clean_text(text) for text in prompt]
 
         tokenized = tokenizer(
             text=text,
@@ -190,7 +191,7 @@ class BERT(Models, ABC):
                   'attention_mask': tokenized['attention_mask'],
                   'token_type_ids': tokenized['token_type_ids']}
 
-        pred = self.model.predict(inputs)
+        pred = model.predict(inputs)
 
         probabilities = pred
         probabilities = pd.DataFrame(probabilities, columns=ekman_map.keys())
