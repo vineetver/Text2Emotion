@@ -149,12 +149,13 @@ class BERT(Models, ABC):
 
         # layers
         bert_model = bert(inputs)[1]
-        dropout = Dropout(0.3, name='pooled_output')
+        dropout = Dropout(0.25, name='pooled_output')
         pooled_output = dropout(bert_model, training=False)
+        linear = Dense(config.hidden_size, name='linear')(pooled_output)
 
         # output
         emotion = Dense(units=n_labels, activation='sigmoid', kernel_initializer=TruncatedNormal(stddev=config.initializer_range),
-                        name='output')(pooled_output)
+                        name='output')(linear)
         outputs = emotion
 
         model = Model(inputs=inputs, outputs=outputs, name='BERT')
