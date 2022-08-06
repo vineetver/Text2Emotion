@@ -7,14 +7,14 @@ from keras.initializers.initializers_v2 import TruncatedNormal
 from keras.layers import Input, Dense, Dropout
 from keras.models import Model
 from tensorflow.python.ops.gen_dataset_ops import BatchDataset
-from transformers import TFBertModel, BertTokenizerFast, BertConfig, TFBertForSequenceClassification
+from transformers import TFBertModel, BertTokenizerFast, BertConfig, TFAutoModelForSequenceClassification
 
 from src.feature.preprocessing import ekman_map, clean_text
 
 model_name = 'bert-base-uncased'
 config = BertConfig.from_pretrained(model_name, output_hidden_states=False)
 tokenizer = BertTokenizerFast.from_pretrained(pretrained_model_name_or_path=model_name, config=config)
-transformer_model = TFBertForSequenceClassification.from_pretrained(model_name, config=config)
+transformer_model = TFAutoModelForSequenceClassification.from_pretrained(model_name, config=config)
 
 
 class Models(ABC):
@@ -151,13 +151,12 @@ class BERT(Models, ABC):
 
         # layers
         bert_model = bert(inputs)[1]
-        dropout = Dropout(0.23, name='pooled_output')
+        dropout = Dropout(config.hidden_dropout_prob, name='pooled_output')
         pooled_output = dropout(bert_model, training=False)
-        linear = Dense(config.hidden_size, name='linear')(pooled_output)
 
         # output
         emotion = Dense(units=n_labels, activation='sigmoid', kernel_initializer=TruncatedNormal(stddev=config.initializer_range),
-                        name='output')(linear)
+                        name='output')(pooled_output)
         outputs = emotion
 
         model = Model(inputs=inputs, outputs=outputs, name='BERT')

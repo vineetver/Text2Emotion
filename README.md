@@ -7,7 +7,7 @@ of a text. This is a multi-label classification task. The labels are 7 emotions:
 sadness, surprise, and neutral. To evaluate the performance of the model F1 score is used.
 
 The current best model is a `fine-tuned BERT` with `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`,
-and `ExponentialDecay` scheduler. The evaluation precision score is 82%. Choose between precision and recall for your usecase. 
+and `PolynomialDecay` scheduler. The evaluation f1 score is 66%. Choose between precision and recall for your use case.
 
 ## Model Architecture
 
@@ -35,20 +35,17 @@ optimism, pride, realization, relief, remorse, sadness, surprise.
 
 For more details about [GoEmotions](https://github.com/google-research/google-research/tree/master/goemotions)
 
-
 ## Dependencies
 
     $ pip install -r requirements.txt
 
-
-
 [//]: # (## Running the pipeline)
 
 [//]: # ()
+
 [//]: # (    $ git clone repo.git)
 
 [//]: # (    $ cd repo)
-
 
 ## Running the tests
 
@@ -64,7 +61,6 @@ For more details about [GoEmotions](https://github.com/google-research/google-re
 ## License
 
 Distributed under the MIT License. See `LICENSE.md` for more information.
-
 
 ## Contact
 

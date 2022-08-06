@@ -1,9 +1,6 @@
-import tensorflow as tf
-
-from src.feature.preprocessing import ekman_map
 from src.model.classifier import BERT
 
-THRESHOLD = 0.8
+THRESHOLD = 0.41
 PROMPT = [
     'A Ukrainian woman who escaped Russias assault on Mariupol says troops were targeting apartment buildings as if they were playing a computer game',
     'I often go to parks to walk and destress and enjoy nature',
@@ -13,10 +10,9 @@ PROMPT = [
 
 def main():
     # initialize BERT model
-    bert = BERT()
+    bert = BERT(params={'max_length': 33, 'batch_size': 64})
 
     model = bert.model
-    model.compile(optimizer=model.optimizer, loss=model.loss, metrics=['accuracy'])
     model.load_weights('../model/bert_model.hdf5')
 
     pred, prob = bert.predict(prompt=PROMPT, threshold=THRESHOLD, model=model)
