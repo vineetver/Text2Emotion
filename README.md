@@ -7,7 +7,7 @@ of a text. This is a multi-label classification task. The labels are 7 emotions:
 sadness, surprise, and neutral. To evaluate the performance of the model F1 score is used.
 
 The current best model is a `fine-tuned BERT` with `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`,
-and `PolynomialDecay` scheduler. The evaluation f1 score is 66%. Choose between precision and recall for your use case.
+and `PolynomialDecay` scheduler. The evaluation f1 score is 66%. The baseline published by the Goemotion team is evaluated at 65% f1.
 
 ## Model Architecture
 
