@@ -1,9 +1,8 @@
 <h2 align="center"> Text2Emotion </h2>
 
-## Description
 
-The task is to build a web application that uses **natural language processing** to predict the emotion
-of a text. This is a multi-label classification task. The labels are 7 emotions: anger, disgust, fear, joy,
+## Description
+Understanding emotions expressed in text is an essential task for many applications. Fine-grained emotion detection refers to identifying which emotions are represented by a text and the degree or intensity to which the emotion is expressed. This is a challenging task, as emotions are often expressed indirectly through metaphors or other figurative languages. The task is to build a web application that uses **natural language processing** to predict the emotion of a text. This is a multi-label classification task. The labels are 7 emotions: anger, disgust, fear, joy,
 sadness, surprise, and neutral. To evaluate the performance of the model F1 score is used.
 
 The current best model is a `fine-tuned BERT` with `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`,
@@ -11,7 +10,15 @@ and `PolynomialDecay` scheduler. The evaluation f1 score is 66%. The baseline pu
 
 ## Model Architecture
 
+The model used is a pre-trained BERT. BERT is a Natural Language Processing (NLP) model developed by Google based on Transformer block architectures. It is one of the most recent advancements in NLP and is used for tasks such as classification, question answering, and entity recognition. BERT's architecture comprises an encoder and a decoder and introduces a new type of cognitive attention called self-attention.   
+
+To fine-tune a pre-trained BERT model, the last layer of the BERT model is removed and replaced with a custom classification layer. The activation function used for the output layer is sigmoid, which outputs the probability for each emotion.
+
 ![model_png](https://github.com/vineetver/Text2Emotion/blob/main/model.png)
+
+## Hyperparameter Choice  
+
+The choice of hyperparameters is critical in training any machine learning model. I have tried various configurations, and this is the configuration that resulted in a 1% increase from the best model provided by the GoEmotions team, with a 65% f1-score on the test set `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`, `batch_size = 64`, `dropout = 0.1 to 0.25` and `PolynomialDecay` scheduler. 
 
 ## About the Data
 
