@@ -1,3 +1,6 @@
+from pathlib import Path
+
+from config import config
 from src.dataset.create_dataset import read_dataset, write_dataset, combine_dataset, split_dataset
 from src.feature.preprocessing import drop_annotator_column, str_to_index, apply_index_to_class, apply_ekman_mapping, \
     apply_clean_text, one_hot_encode
@@ -33,7 +36,7 @@ def main():
     # one-hot encode the class labels
     df = one_hot_encode(df)
 
-    df.to_csv('../data/preprocessed.csv', sep='\t', encoding='utf-8')
+    df.to_csv(Path(config.DATA_DIR, 'preprocessed.csv'), sep='\t', encoding='utf-8')
 
 
 if __name__ == "__main__":

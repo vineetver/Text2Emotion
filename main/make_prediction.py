@@ -1,3 +1,6 @@
+from pathlib import Path
+
+from config import config
 from src.model.classifier import BERT
 
 THRESHOLD = 0.41
@@ -13,7 +16,7 @@ def main():
     bert = BERT(params={'max_length': 33, 'batch_size': 64})
 
     model = bert.model
-    model.load_weights('../model/bert_model.hdf5')
+    model.load_weights(Path(config.MODEL_DIR, 'bert_model.hdf5'))
 
     pred, prob = bert.predict(prompt=PROMPT, threshold=THRESHOLD, model=model)
 

@@ -1,13 +1,16 @@
+from pathlib import Path
+
 import pandas as pd
 import tensorflow as tf
 
 from src.dataset.create_dataset import split_dataset
 from src.model.classifier import BERT
+from config import config
 
 
 def main():
     # Load data
-    df = pd.read_csv('../data/preprocessed.csv', sep='\t', encoding='utf-8')
+    df = pd.read_csv(Path(config.DATA_DIR, 'preprocessed.csv'), sep='\t', encoding='utf-8')
 
     # split data into training and validation sets
     train_df, test_df, val_df = split_dataset(df, test_size=0.1)
