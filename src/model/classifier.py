@@ -8,6 +8,7 @@ from keras.layers import Input, Dense, Dropout
 from keras.models import Model
 from tensorflow.python.ops.gen_dataset_ops import BatchDataset
 from transformers import TFBertModel, BertTokenizerFast, BertConfig, TFAutoModelForSequenceClassification
+from typing import Tuple, List
 
 from src.feature.preprocessing import ekman_map, clean_text
 
@@ -71,7 +72,7 @@ class BERT(Models, ABC):
         if params['batch_size'] is None:
             self.params['batch_size'] = 32
 
-    def tokenize(self, df: pd.DataFrame) -> tuple[tf.Tensor, np.ndarray]:
+    def tokenize(self, df: pd.DataFrame) -> Tuple[tf.Tensor, np.ndarray]:
         """
         Tokenize the dataframe.
 
@@ -118,7 +119,7 @@ class BERT(Models, ABC):
 
         return tensor
 
-    def preprocess(self, df: pd.DataFrame) -> tuple[np.ndarray, np.ndarray]:
+    def preprocess(self, df: pd.DataFrame) -> Tuple[np.ndarray, np.ndarray]:
         """
         Preprocess the dataframe for model training.
 
@@ -163,7 +164,7 @@ class BERT(Models, ABC):
 
         return model
 
-    def predict(self, prompt: list[str], threshold: float, model: Model) -> tuple[pd.DataFrame, pd.DataFrame]:
+    def predict(self, prompt: List[str], threshold: float, model: Model) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
         Predict the emotion of the text.
 

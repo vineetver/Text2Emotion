@@ -37,7 +37,7 @@ def main():
     model.fit(train_tensor, epochs=2, validation_data=val_tensor)
 
     # save model
-    model.save_weights('../model/bert_model.hdf5')
+    model.save_weights('../models/bert_model.hdf5')
 
 
 if __name__ == "__main__":

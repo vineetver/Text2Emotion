@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 import re
 import string
-from typing import Any
+from typing import Any, List
 
 import emoji
 import pandas as pd
@@ -97,7 +99,7 @@ def str_to_index(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def index_to_class(index_list: list) -> list[str | Any]:
+def index_to_class(index_list: list) -> List[str | Any]:
     """
     This function converts a list indices to a list of class labels
     e.g. [0] -> ['admiration']

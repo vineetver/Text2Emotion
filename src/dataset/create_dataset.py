@@ -2,9 +2,10 @@ import os
 
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from typing import Tuple
 
 
-def read_dataset(train_url: str, test_url: str, valid_url: str) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def read_dataset(train_url: str, test_url: str, valid_url: str) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     This function reads the training/testing/validation dataset from the url
     and returns a pandas dataframe.
@@ -67,7 +68,7 @@ def combine_dataset(train_df: pd.DataFrame, test_df: pd.DataFrame, valid_df: pd.
     return combined_df
 
 
-def split_dataset(df: pd.DataFrame, test_size: float = 0.2) -> tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def split_dataset(df: pd.DataFrame, test_size: float = 0.2) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
     This function splits the dataset into train, test and valid.
 
