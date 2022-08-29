@@ -4,6 +4,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+lambda/
+config/logs/
+mlruns/
+.idea/
 # C extensions
 *.so
 
@@ -137,4 +141,3 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
-

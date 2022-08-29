@@ -3,6 +3,7 @@ import os
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from typing import Tuple
+from config.config import logger
 
 
 def read_dataset(train_url: str, test_url: str, valid_url: str) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
@@ -88,10 +89,13 @@ def split_dataset(df: pd.DataFrame, test_size: float = 0.2) -> Tuple[pd.DataFram
     valid_df : pd.DataFrame
         valid dataset
     """
-    train_df, test_df = train_test_split(df, test_size=test_size, random_state=42)
-    train_df, valid_df = train_test_split(train_df, test_size=test_size, random_state=42)
+    train_df, test_df = train_test_split(
+        df, test_size=test_size, random_state=42)
+    train_df, valid_df = train_test_split(
+        train_df, test_size=test_size, random_state=42)
 
-    print(f'The dataframe was split into train: {train_df.shape} and valid: {valid_df.shape} and test: {test_df.shape}')
+    logger.info(
+        f'The dataframe was split into train: {train_df.shape} and valid: {valid_df.shape} and test: {test_df.shape}')
 
     return train_df, test_df, valid_df
 
@@ -126,9 +130,11 @@ def write_dataset(train_df: pd.DataFrame, test_df: pd.DataFrame, valid_df: pd.Da
     test_path = os.path.join(path, 'test.csv')
     valid_path = os.path.join(path, 'valid.csv')
 
-    train_df.to_csv(train_path, sep='\t', encoding='utf-8', index=False, header=False)
-    test_df.to_csv(test_path, sep='\t', encoding='utf-8', index=False, header=False)
-    valid_df.to_csv(valid_path, sep='\t', encoding='utf-8', index=False, header=False)
+    train_df.to_csv(train_path, sep='\t', encoding='utf-8',
+                    index=False, header=False)
+    test_df.to_csv(test_path, sep='\t', encoding='utf-8',
+                   index=False, header=False)
+    valid_df.to_csv(valid_path, sep='\t', encoding='utf-8',
+                    index=False, header=False)
 
     return None
-
