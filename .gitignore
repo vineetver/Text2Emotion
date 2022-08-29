@@ -6,8 +6,10 @@ __pycache__/
 .vscode/
 lambda/
 config/logs/
+stores/
 mlruns/
 .idea/
+.python-version
 # C extensions
 *.so
 

@@ -1,6 +1,4 @@
 from abc import ABC
-from argparse import Namespace
-import argparse
 from pathlib import Path
 
 import mlflow
@@ -21,7 +19,7 @@ from config import config
 from config.config import logger
 from src.dataset.create_dataset import split_dataset
 from src.feature.preprocessing import ekman_map, clean_text
-from src.utils import write_dict, get_dict, set_seeds
+from src.utils import set_seeds
 
 model_name = 'bert-base-uncased'
 bertconfig = BertConfig.from_pretrained(model_name, output_hidden_states=False)
@@ -226,25 +224,26 @@ class BERT(Models, ABC):
         train_loss = model.evaluate(train_tensor, verbose=0)
         val_loss = model.evaluate(val_tensor, verbose=0)
 
+
         if not trial:
             mlflow.log_metrics(
                 {'train_loss': train_loss[0], 'val_loss': val_loss[0]})
 
         if trial:
             trial.report(val_loss[0], step=1)
-            if trial.should_prune(val_loss[0]):
+            if trial.should_prune():
                 raise optuna.structs.TrialPruned()
 
         # Threshold
         best_threshold = 0
         best_f1 = 0
 
-        pred = model.predict(test_tensor)
+        pred = model.predict(val_tensor)
 
         for threshold in np.arange(0.10, 0.99, 0.01):
             preds = np.where(pred > threshold, 1, 0)
 
-            f1 = f1_score(y_test, preds, average='weighted', zero_division=0)
+            f1 = f1_score(y_val, preds, average='weighted', zero_division=0)
 
             if f1 > best_f1:
                 best_threshold = threshold
@@ -252,26 +251,23 @@ class BERT(Models, ABC):
             else:
                 continue
 
-        logger.info(
-            f'Found best threshold: {best_threshold} with f1 score: {best_f1}')
+        logger.info(f'Found best threshold: {best_threshold} with f1 score: {best_f1}')
 
         y_pred = np.where(pred > best_threshold, 1, 0)
 
         # evaluate model
-        metrics = self.get_metrics(y_test, y_pred, ekman_map)
+        metrics = self.get_metrics(y_val, y_pred, ekman_map)
         logger.info(f'Metrics: {metrics}')
-
+        
         # save model
         model.save(Path(config.MODEL_DIR, 'bert_model.hdf5'))
-        params = self.params
-        print(params)
-        print(self.params)
-        print(model)
+
         return {
             'params': self.params,
             'model': model,
             'metrics': metrics,
         }
+
 
     @staticmethod
     def get_metrics(y_true: np.ndarray, y_pred: np.ndarray, n_labels: list) -> dict:
@@ -293,7 +289,6 @@ class BERT(Models, ABC):
         metrics['overall']['precision'] = overall_metrics[0]
         metrics['overall']['recall'] = overall_metrics[1]
         metrics['overall']['f1'] = overall_metrics[2]
-        metrics['overall']['support'] = overall_metrics[3]
         metrics['overall']['num_samples'] = float(len(y_true))
 
         class_metrics = precision_recall_fscore_support(
@@ -302,7 +297,6 @@ class BERT(Models, ABC):
             metrics['classes'][label] = {'precision': class_metrics[0][i],
                                          'recall': class_metrics[1][i],
                                          'f1': class_metrics[2][i],
-                                         'support': class_metrics[3][i],
                                          'num_samples': float(len(y_true))
                                          }
 
