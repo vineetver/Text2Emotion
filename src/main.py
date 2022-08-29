@@ -85,7 +85,6 @@ def train_model(
         bert = BERT(params=params)
         artifacts = bert.fit(df)
         performance = artifacts['metrics']
-        logger.info(json.dumps(performance, indent=2))
 
         # Clear session
         K.clear_session()
@@ -94,14 +93,14 @@ def train_model(
         mlflow.log_metrics({'precision': performance['overall']['precision']})
         mlflow.log_metrics({'recall': performance['overall']['recall']})
         mlflow.log_metrics({'f1': performance['overall']['f1']})
-        mlflow.log_metrics(vars(artifacts['params']))
 
         # log artifacts
         with tempfile.TemporaryDirectory() as tmpdir:
             write_dict(vars(artifacts['params']), Path(
                 tmpdir, 'params.json'), cls=NumpyEncoder)
-            joblib.dumb(artifacts['model'], Path(tmpdir, 'model.pkl'))
-            write_dict(performance, Path(tmpdir, 'metrics.json'))
+            joblib.dump(artifacts['model'], Path(tmpdir, 'model.pkl'))
+            write_dict(performance, Path(
+                tmpdir, 'metrics.json'))
             mlflow.log_artifact(tmpdir)
 
         if not test_run:

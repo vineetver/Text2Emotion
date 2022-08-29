@@ -123,8 +123,8 @@ class BERT(Models, ABC):
                   'token_type_ids': tokenized_input['token_type_ids']}
 
         if shuffle is not None:
-            tensor = tf.data.Dataset.from_tensor_slices((inputs, labels)).batch(
-                self.params.batch_size).shuffle(shuffle).prefetch(1)
+            tensor = tf.data.Dataset.from_tensor_slices(
+                (inputs, labels)).shuffle(shuffle).batch(self.params.batch_size).prefetch(1)
         else:
             tensor = tf.data.Dataset.from_tensor_slices(
                 (inputs, labels)).batch(self.params.batch_size).prefetch(1)
@@ -239,14 +239,12 @@ class BERT(Models, ABC):
         best_threshold = 0
         best_f1 = 0
 
-        y_pred = model.predict(test_tensor)
-        y_test = test_df.loc[:, ekman_map.keys()].values
+        pred = model.predict(test_tensor)
 
         for threshold in np.arange(0.10, 0.99, 0.01):
-            preds = np.where(y_pred > threshold, 1, 0)
+            preds = np.where(pred > threshold, 1, 0)
 
-            f1 = f1_score(y_test, preds,
-                          average='weighted', zero_division=0)
+            f1 = f1_score(y_test, preds, average='weighted', zero_division=0)
 
             if f1 > best_f1:
                 best_threshold = threshold
@@ -257,14 +255,18 @@ class BERT(Models, ABC):
         logger.info(
             f'Found best threshold: {best_threshold} with f1 score: {best_f1}')
 
-        y_pred = np.where(y_pred > best_threshold, 1, 0)
+        y_pred = np.where(pred > best_threshold, 1, 0)
+
         # evaluate model
         metrics = self.get_metrics(y_test, y_pred, ekman_map)
         logger.info(f'Metrics: {metrics}')
 
         # save model
         model.save(Path(config.MODEL_DIR, 'bert_model.hdf5'))
-
+        params = self.params
+        print(params)
+        print(self.params)
+        print(model)
         return {
             'params': self.params,
             'model': model,
@@ -287,21 +289,21 @@ class BERT(Models, ABC):
         metrics = {'overall': {}, 'classes': {}}
 
         overall_metrics = precision_recall_fscore_support(
-            y_true, y_pred, average='weighted')
+            y_true, y_pred, average='weighted', zero_division=0)
         metrics['overall']['precision'] = overall_metrics[0]
         metrics['overall']['recall'] = overall_metrics[1]
         metrics['overall']['f1'] = overall_metrics[2]
         metrics['overall']['support'] = overall_metrics[3]
-        metrics['overall']['num_samples'] = np.float64(len(y_true))
+        metrics['overall']['num_samples'] = float(len(y_true))
 
         class_metrics = precision_recall_fscore_support(
-            y_true, y_pred, average=None)
+            y_true, y_pred, average=None, zero_division=0)
         for i, label in enumerate(n_labels):
             metrics['classes'][label] = {'precision': class_metrics[0][i],
                                          'recall': class_metrics[1][i],
                                          'f1': class_metrics[2][i],
                                          'support': class_metrics[3][i],
-                                         'num_samples': np.float64(len(y_true))
+                                         'num_samples': float(len(y_true))
                                          }
 
         return metrics
