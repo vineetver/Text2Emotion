@@ -1,19 +1,18 @@
 from abc import ABC
 from pathlib import Path
+from typing import Tuple, List
 
 import mlflow
 import numpy as np
+import optuna
 import pandas as pd
 import tensorflow as tf
-import optuna
 from keras.initializers.initializers_v2 import TruncatedNormal
 from keras.layers import Input, Dense, Dropout
 from keras.models import Model
 from sklearn.metrics import precision_recall_fscore_support, f1_score
-import keras.backend as K
 from tensorflow.python.ops.gen_dataset_ops import BatchDataset
-from transformers import TFBertModel, BertTokenizerFast, BertConfig, TFAutoModelForSequenceClassification
-from typing import Tuple, List
+from transformers import BertTokenizerFast, BertConfig, TFAutoModelForSequenceClassification
 
 from config import config
 from config.config import logger
@@ -116,7 +115,7 @@ class BERT(Models, ABC):
             tensor: the input tensor
 
         """
-        inputs = {'input_ids': tokenized_input['input_ids'],
+        inputs = {'input_ids'     : tokenized_input['input_ids'],
                   'attention_mask': tokenized_input['attention_mask'],
                   'token_type_ids': tokenized_input['token_type_ids']}
 
@@ -165,7 +164,7 @@ class BERT(Models, ABC):
             shape=(self.params.max_length,), name='attention_mask', dtype='int32')
         token_type_ids = Input(
             shape=(self.params.max_length,), name='token_type_ids', dtype='int32')
-        inputs = {'input_ids': input_ids, 'attention_mask': attention_mask,
+        inputs = {'input_ids'     : input_ids, 'attention_mask': attention_mask,
                   'token_type_ids': token_type_ids}
 
         # layers
@@ -224,7 +223,6 @@ class BERT(Models, ABC):
         train_loss = model.evaluate(train_tensor, verbose=0)
         val_loss = model.evaluate(val_tensor, verbose=0)
 
-
         if not trial:
             mlflow.log_metrics(
                 {'train_loss': train_loss[0], 'val_loss': val_loss[0]})
@@ -258,16 +256,15 @@ class BERT(Models, ABC):
         # evaluate model
         metrics = self.get_metrics(y_val, y_pred, ekman_map)
         logger.info(f'Metrics: {metrics}')
-        
+
         # save model
         model.save(Path(config.MODEL_DIR, 'bert_model.hdf5'))
 
         return {
-            'params': self.params,
-            'model': model,
+            'params' : self.params,
+            'model'  : model,
             'metrics': metrics,
         }
-
 
     @staticmethod
     def get_metrics(y_true: np.ndarray, y_pred: np.ndarray, n_labels: list) -> dict:
@@ -294,9 +291,9 @@ class BERT(Models, ABC):
         class_metrics = precision_recall_fscore_support(
             y_true, y_pred, average=None, zero_division=0)
         for i, label in enumerate(n_labels):
-            metrics['classes'][label] = {'precision': class_metrics[0][i],
-                                         'recall': class_metrics[1][i],
-                                         'f1': class_metrics[2][i],
+            metrics['classes'][label] = {'precision'  : class_metrics[0][i],
+                                         'recall'     : class_metrics[1][i],
+                                         'f1'         : class_metrics[2][i],
                                          'num_samples': float(len(y_true))
                                          }
 
@@ -327,7 +324,7 @@ class BERT(Models, ABC):
             return_token_type_ids=True
         )
 
-        inputs = {'input_ids': tokenized['input_ids'],
+        inputs = {'input_ids'     : tokenized['input_ids'],
                   'attention_mask': tokenized['attention_mask'],
                   'token_type_ids': tokenized['token_type_ids']}
 

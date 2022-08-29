@@ -1,24 +1,25 @@
-from pathlib import Path
-from argparse import Namespace
-from src.utils import get_dict, write_dict
-from config import config
-import typer
 import json
 import tempfile
-import pandas as pd
-from numpyencoder import NumpyEncoder
-import tensorflow as tf
+from argparse import Namespace
+from pathlib import Path
+
 import joblib
+import keras.backend as K
 import mlflow
 import optuna
+import pandas as pd
+import typer
+from numpyencoder import NumpyEncoder
 from optuna.integration.mlflow import MLflowCallback
+
+from config import config
 from config.config import logger
-import keras.backend as K
-from src.dataset.create_dataset import read_dataset, write_dataset, combine_dataset, split_dataset
+from src.dataset.create_dataset import read_dataset, combine_dataset
 from src.feature.preprocessing import drop_annotator_column, str_to_index, apply_index_to_class, apply_ekman_mapping, \
     apply_clean_text, one_hot_encode
-from src.model.classifier import BERT
 from src.model import optimization
+from src.model.classifier import BERT
+from src.utils import get_dict, write_dict
 
 app = typer.Typer()
 
@@ -59,7 +60,8 @@ def etl_data():
     logger.info('✅ Data successfully extracted and transformed ✅')
 
 
-def train_model(params_path: str = 'config/parameters.json', experiment_name: str = 'bert_model', run_name: str = 'PolynomialDecay', test_run: bool = False) -> None:
+def train_model(params_path: str = 'config/parameters.json', experiment_name: str = 'bert_model', run_name: str = 'PolynomialDecay',
+                test_run: bool = False) -> None:
     """
     Trains a model with the provided parameters
 
@@ -106,6 +108,7 @@ def train_model(params_path: str = 'config/parameters.json', experiment_name: st
             write_dict(performance, Path(
                 config.CONFIG_DIR, 'performance.json'))
 
+
 def optimize(params_path: str = 'config/parammeters.json', experiment_name: str = 'optimization', n_trails: int = 10) -> None:
     """This function optimizes the model's hyperparameters
 
@@ -133,7 +136,6 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
         callbacks=[mlflow_callback]
     )
     logger.info('🏁 Optimization Complete 🏁')
-
 
     trials_df = study.trials_dataframe()
     trials_df = trials_df.sort_values(['user_attrs_f1'], ascending=False)
