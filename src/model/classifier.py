@@ -1,5 +1,6 @@
 from abc import ABC
 from pathlib import Path
+from argparse import Namespace
 from typing import Tuple, List
 
 import mlflow
@@ -66,7 +67,7 @@ class BERT(Models, ABC):
     Pre-trained BERT model
     """
 
-    def __init__(self, params: dict):
+    def __init__(self, params: Namespace):
         """
         Initialize the BERT model with parameters.
 
@@ -115,7 +116,7 @@ class BERT(Models, ABC):
             tensor: the input tensor
 
         """
-        inputs = {'input_ids'     : tokenized_input['input_ids'],
+        inputs = {'input_ids': tokenized_input['input_ids'],
                   'attention_mask': tokenized_input['attention_mask'],
                   'token_type_ids': tokenized_input['token_type_ids']}
 
@@ -164,7 +165,7 @@ class BERT(Models, ABC):
             shape=(self.params.max_length,), name='attention_mask', dtype='int32')
         token_type_ids = Input(
             shape=(self.params.max_length,), name='token_type_ids', dtype='int32')
-        inputs = {'input_ids'     : input_ids, 'attention_mask': attention_mask,
+        inputs = {'input_ids': input_ids, 'attention_mask': attention_mask,
                   'token_type_ids': token_type_ids}
 
         # layers
@@ -181,7 +182,7 @@ class BERT(Models, ABC):
 
         return model
 
-    def fit(self, df: pd.DataFrame, trial: optuna.trial.Trial = None) -> None:
+    def fit(self, df: pd.DataFrame, trial: optuna.trial.Trial = None) -> dict:
         """
         Fit the model to the training data.
         """
@@ -249,7 +250,8 @@ class BERT(Models, ABC):
             else:
                 continue
 
-        logger.info(f'Found best threshold: {best_threshold} with f1 score: {best_f1}')
+        logger.info(
+            f'Found best threshold: {best_threshold} with f1 score: {best_f1}')
 
         y_pred = np.where(pred > best_threshold, 1, 0)
 
@@ -261,8 +263,8 @@ class BERT(Models, ABC):
         model.save(Path(config.MODEL_DIR, 'bert_model.hdf5'))
 
         return {
-            'params' : self.params,
-            'model'  : model,
+            'params': self.params,
+            'model': model,
             'metrics': metrics,
         }
 
@@ -291,9 +293,9 @@ class BERT(Models, ABC):
         class_metrics = precision_recall_fscore_support(
             y_true, y_pred, average=None, zero_division=0)
         for i, label in enumerate(n_labels):
-            metrics['classes'][label] = {'precision'  : class_metrics[0][i],
-                                         'recall'     : class_metrics[1][i],
-                                         'f1'         : class_metrics[2][i],
+            metrics['classes'][label] = {'precision': class_metrics[0][i],
+                                         'recall': class_metrics[1][i],
+                                         'f1': class_metrics[2][i],
                                          'num_samples': float(len(y_true))
                                          }
 
@@ -324,7 +326,7 @@ class BERT(Models, ABC):
             return_token_type_ids=True
         )
 
-        inputs = {'input_ids'     : tokenized['input_ids'],
+        inputs = {'input_ids': tokenized['input_ids'],
                   'attention_mask': tokenized['attention_mask'],
                   'token_type_ids': tokenized['token_type_ids']}
 

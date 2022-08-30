@@ -60,6 +60,7 @@ def etl_data():
     logger.info('✅ Data successfully extracted and transformed ✅')
 
 
+@app.command()
 def train_model(params_path: str = 'config/parameters.json', experiment_name: str = 'bert_model', run_name: str = 'PolynomialDecay',
                 test_run: bool = False) -> None:
     """
@@ -109,6 +110,7 @@ def train_model(params_path: str = 'config/parameters.json', experiment_name: st
                 config.CONFIG_DIR, 'performance.json'))
 
 
+@app.command()
 def optimize(params_path: str = 'config/parammeters.json', experiment_name: str = 'optimization', n_trails: int = 10) -> None:
     """This function optimizes the model's hyperparameters
 
@@ -126,8 +128,10 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
 
     params = Namespace(**get_dict(filepath=params_path))
     pruner = optuna.pruners.MedianPruner(n_startup_trials=5, n_warmup_steps=5)
-    study = optuna.create_study(study_name=experiment_name, direction='maximize', pruner=pruner)
-    mlflow_callback = MLflowCallback(tracking_uri=mlflow.get_tracking_uri(), metric_name='f1')
+    study = optuna.create_study(
+        study_name=experiment_name, direction='maximize', pruner=pruner)
+    mlflow_callback = MLflowCallback(
+        tracking_uri=mlflow.get_tracking_uri(), metric_name='f1')
 
     logger.info('🏁 Starting Optimization 🏁')
     study.optimize(
@@ -142,4 +146,10 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
     params = {**params.__dict__, **study.best_trial.params}
     write_dict(params, filepath=params_path, cls=NumpyEncoder)
     logger.info(f'✅ Best value of F1 Score {study.best_trial.value} ✅')
-    logger.info(f'✅ Best HyperParammeters: {json.dumps(study.best_trial.params, indent=2)} ✅')
+    logger.info(
+        f'✅ Best HyperParammeters: {json.dumps(study.best_trial.params, indent=2)} ✅')
+
+
+if __name__ == '__main__':
+    etl_data()
+    app()   # pragma: no cover, live app
