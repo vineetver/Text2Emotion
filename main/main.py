@@ -29,6 +29,8 @@ def etl_data():
     """
     Extracts, loads and transformers our data
     """
+    logger.info('✅ Starting Data extraction, load and transform ✅')
+
     # Read the training, testing, and validation datasets
     train_df, test_df, valid_df = read_dataset(
         config.TRAIN_URL, config.TEST_URL, config.VALID_URL)
@@ -151,5 +153,4 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
 
 
 if __name__ == '__main__':
-    etl_data()
     app()   # pragma: no cover, live app

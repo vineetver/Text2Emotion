@@ -1,5 +1,6 @@
 import json
 import random
+from pathlib import Path
 from typing import Dict
 
 import numpy as np
@@ -18,7 +19,7 @@ def get_dict(filepath: str) -> dict:
     return d
 
 
-def write_dict(d: Dict, filepath: str, cls=None, sortkeys: bool = False) -> None:
+def write_dict(d: Dict, filepath: Path | str, cls=None, sortkeys: bool = False) -> None:
     """Write a dictionary to a specific location of a JSON file
 
     Args:
