@@ -259,9 +259,6 @@ class BERT(Models, ABC):
         metrics = self.get_metrics(y_val, y_pred, ekman_map)
         logger.info(f'Metrics: {metrics}')
 
-        # save model
-        model.save(Path(config.MODEL_DIR, 'bert_model.hdf5'))
-
         return {
             'params': self.params,
             'model': model,

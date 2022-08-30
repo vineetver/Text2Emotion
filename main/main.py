@@ -20,6 +20,7 @@ from src.feature.preprocessing import drop_annotator_column, str_to_index, apply
 from src.model import optimization
 from src.model.classifier import BERT
 from src.utils import get_dict, write_dict
+from src.model.optimization import load_artifacts
 
 app = typer.Typer()
 
@@ -101,7 +102,8 @@ def train_model(params_path: str = 'config/parameters.json', experiment_name: st
         with tempfile.TemporaryDirectory() as tmpdir:
             write_dict(vars(artifacts['params']), Path(
                 tmpdir, 'params.json'), cls=NumpyEncoder)
-            joblib.dump(artifacts['model'], Path(tmpdir, 'model.pkl'))
+                # save model
+            artifacts['model'].save(Path(tmpdir, 'bert_model.hdf5'))
             write_dict(performance, Path(
                 tmpdir, 'metrics.json'))
             mlflow.log_artifact(tmpdir)
@@ -151,6 +153,30 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
     logger.info(
         f'✅ Best HyperParammeters: {json.dumps(study.best_trial.params, indent=2)} ✅')
 
+@app.command()
+def predict_emotion(prompt: str = None, run_id: str = None) -> None:
+    """This function predicts the emotion of a prompt (text)
+
+    Args:
+        prompt (str, optional): prompt to predict the emotion of. Defaults to None.
+        run_id (str, optional): run_id of the model to use. Defaults to None.
+    """
+    if not run_id:
+        run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read() ## TO-DO CHANGE PATH TO FINAL MODEL DIR
+
+    artifacts = load_artifacts(run_id=run_id)
+
+    # Load weights
+    bert = BERT(params=artifacts['params'])
+    model = bert.model
+    model.load_weights(Path(config.MODEL_DIR, 'bert_model.hdf5')) ## TO-DO CHANGE PATH TO FINAL MODEL DIR
+
+    # Predict
+    pred, prob = bert.predict(prompt=prompt, threshold=artifacts.params.threshold, model=model)
+    logger.info(f'🏁 Prediction: {pred} and probability {prob} 🏁')
+
+    return pred, prob
+
 
 if __name__ == '__main__':
-    app()   # pragma: no cover, live app
+    app()
