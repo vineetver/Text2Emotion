@@ -19,7 +19,7 @@ def get_dict(filepath: str) -> dict:
     return d
 
 
-def write_dict(d: Dict, filepath: Path | str, cls=None, sortkeys: bool = False) -> None:
+def write_dict(d: Dict, filepath: Path, cls=None, sortkeys: bool = False) -> None:
     """Write a dictionary to a specific location of a JSON file
 
     Args:
@@ -28,9 +28,9 @@ def write_dict(d: Dict, filepath: Path | str, cls=None, sortkeys: bool = False) 
         cls (optional): encoder to use on dict data. Defaults to None
         sortkeys (bool, optional): whether to sort keys alphabeticallyDefaults to False
     """
-    with open(filepath, "w") as fp:
+    with open(filepath, 'w+') as fp:
         json.dump(d, indent=2, fp=fp, cls=cls, sort_keys=sortkeys)
-        fp.write("\n")
+        fp.write('\n')
 
 
 def set_seeds(seed: int = 42) -> None:

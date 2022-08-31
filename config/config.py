@@ -7,7 +7,6 @@ import mlflow
 BASE_DIR = Path(__file__).parent.parent
 LOGS_DIR = Path(BASE_DIR, 'logs')
 DATA_DIR = Path(BASE_DIR, 'data')
-MODEL_DIR = Path(BASE_DIR, 'models')
 CONFIG_DIR = Path(BASE_DIR, 'config')
 STORES_DIR = Path(BASE_DIR, 'stores')
 
@@ -20,7 +19,7 @@ BLOB_STORE.mkdir(parents=True, exist_ok=True)
 LOGS_DIR.mkdir(parents=True, exist_ok=True)
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-mlflow.set_tracking_uri("file://" + str(MODEL_REGISTRY.absolute()))
+mlflow.set_tracking_uri("file://" + str(MODEL_REGISTRY))
 
 TRAIN_URL = 'https://github.com/google-research/google-research/raw/master/goemotions/data/train.tsv'
 VALID_URL = 'https://github.com/google-research/google-research/raw/master/goemotions/data/dev.tsv'

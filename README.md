@@ -8,17 +8,70 @@ sadness, surprise, and neutral. To evaluate the performance of the model F1 scor
 The current best model is a `fine-tuned BERT` with `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`,
 and `PolynomialDecay` scheduler. The evaluation f1 score is 66%. The baseline published by the Goemotion team is evaluated at 65% f1.
 
-## Model Architecture
+## Hard Requirements
 
-The model used is a pre-trained BERT. BERT is a Natural Language Processing (NLP) model developed by Google based on Transformer block architectures. It is one of the most recent advancements in NLP and is used for tasks such as classification, question answering, and entity recognition. BERT's architecture comprises an encoder and a decoder and introduces a new type of cognitive attention called self-attention.   
+    Python>=3.7
+    CUDA=11.x
+    CUDA Enabled GPU
+    
 
-To fine-tune a pre-trained BERT model, the last layer of the BERT model is removed and replaced with a custom classification layer. The activation function used for the output layer is sigmoid, which outputs the probability for each emotion.
+## Setting up the environment
 
-![model_png](https://github.com/vineetver/Text2Emotion/blob/main/model.png)
+Before we can run the pipline, PYTHONPATH must be set for the config directory.
 
-## Hyperparameter Choice  
+```bash
+git clone https://github.com/vineetver/Text2Emotion.git
+cd Text2Emotion
+export PYTHONPATH=$PYTHONPATH:${PWD}/config
+```
+Setting up the virtual environment.
 
-The choice of hyperparameters is critical in training any machine learning model. I have tried various configurations, and this is the configuration that resulted in a 1% increase from the best model provided by the GoEmotions team, with a 65% f1-score on the test set `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`, `batch_size = 64`, `dropout = 0.1 to 0.25` and `PolynomialDecay` scheduler. 
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install --upgrade pip
+```
+
+Installing cudnn 8.1.x, cudnn needs to be installed separately before we can install tensorflow.
+
+For Ubuntu 20.04
+
+```bash
+wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/libcudnn8_8.1.1.33-1+cuda11.2_amd64.deb
+https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/libcudnn8-dev_8.1.1.33-1+cuda11.2_amd64.deb
+sudo dpkg -i libcudnn8_8.1.1.33-1+cuda11.2_amd64.deb
+sudo dpkg -i libcudnn8-dev_8.1.1.33-1+cuda11.2_amd64.deb
+sudo apt-get install -f  # resolve dependency errors you saw earlier
+```
+
+```bash
+pip install -r requirements.txt
+```
+## Workflow
+
+Documentation for the main.py is available by running the following command.
+
+```bash
+python main/main.py --help
+```
+
+```bash
+python main/main.py etl-data
+python main/main.py train-model --params_file='config/parammeters.json' --experiment_name='fine-tuned-bert' --run_name='PolynomailDecay'
+python main/main.py optimize --params_file='config/parammeters.json' --experiment_name='optimization' --n_trials=10
+python main/main.py predict-emotion --prompt='I am very happy'
+```
+
+## API
+
+```bash
+uvicorn app.api:app --host 127.0.0.1 --port 8080 --reload --reload-dir src --reload-dir app  # dev
+gunicorn -c app/gunicorn.py -k uvicorn.workers.UvicornWorker app.api:app  # production
+```
+
+## Hyperparameter Choice
+
+The choice of hyperparameters is critical in training any machine learning model. I have tried various configurations, and this is the configuration that resulted in a 1% increase from the best model provided by the GoEmotions team, with a 65% f1-score on the test set `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`, `batch_size = 64`, `dropout = 0.1 to 0.25` and `PolynomialDecay` scheduler.
 
 ## About the Data
 
@@ -46,13 +99,7 @@ For more details about [GoEmotions](https://github.com/google-research/google-re
 
     $ pip install -r requirements.txt
 
-[//]: # (## Running the pipeline)
 
-[//]: # ()
-
-[//]: # (    $ git clone repo.git)
-
-[//]: # (    $ cd repo)
 
 ## Running the tests
 
@@ -72,4 +119,3 @@ Distributed under the MIT License. See `LICENSE.md` for more information.
 ## Contact
 
 Vineet Verma - vineetver@hotmail.com - [Goodbyeweekend.io](https://www.goodbyeweekend.io/)
-

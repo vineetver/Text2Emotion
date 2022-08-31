@@ -1,10 +1,7 @@
 import json
-import tempfile
 from argparse import Namespace
 from pathlib import Path
 
-import joblib
-import keras.backend as K
 import mlflow
 import optuna
 import pandas as pd
@@ -19,8 +16,8 @@ from src.feature.preprocessing import drop_annotator_column, str_to_index, apply
     apply_clean_text, one_hot_encode
 from src.model import optimization
 from src.model.classifier import BERT
-from src.utils import get_dict, write_dict
 from src.model.optimization import load_artifacts
+from src.utils import get_dict, write_dict
 
 app = typer.Typer()
 
@@ -82,7 +79,6 @@ def train_model(params_path: str = 'config/parameters.json', experiment_name: st
     params = Namespace(**get_dict(filepath=params_path))
 
     mlflow.set_experiment(experiment_name)
-
     with mlflow.start_run(run_name=run_name):
         run_id = mlflow.active_run().info.run_id
         logger.info(f'🏁 Starting Run ID: {run_id} 🏁')
@@ -90,28 +86,24 @@ def train_model(params_path: str = 'config/parameters.json', experiment_name: st
         artifacts = bert.fit(df)
         performance = artifacts['metrics']
 
-        # Clear session
-        K.clear_session()
-
         # log metrics and params
         mlflow.log_metrics({'precision': performance['overall']['precision']})
         mlflow.log_metrics({'recall': performance['overall']['recall']})
         mlflow.log_metrics({'f1': performance['overall']['f1']})
 
-        # log artifacts
-        with tempfile.TemporaryDirectory() as tmpdir:
-            write_dict(vars(artifacts['params']), Path(
-                tmpdir, 'params.json'), cls=NumpyEncoder)
-                # save model
-            artifacts['model'].save(Path(tmpdir, 'bert_model.hdf5'))
-            write_dict(performance, Path(
-                tmpdir, 'metrics.json'))
-            mlflow.log_artifact(tmpdir)
+        experiment_id = mlflow.get_run(run_id=run_id).info.experiment_id
+        artifacts_path = Path(config.MODEL_REGISTRY, experiment_id, run_id, 'artifacts')
+        write_dict(vars(artifacts['params']), Path(artifacts_path, 'params.json'), cls=NumpyEncoder)
+        artifacts['model'].save(Path(artifacts_path, 'bert_model.hdf5'))
+        write_dict(performance, Path(artifacts_path, 'metrics.json'))
+        mlflow.log_artifact(str(artifacts_path))
 
         if not test_run:
             open(Path(config.CONFIG_DIR, 'run_id.txt'), 'w').write(run_id)
             write_dict(performance, Path(
                 config.CONFIG_DIR, 'performance.json'))
+
+        logger.info(f'🏁 Run ID: {run_id} Finished 🏁')
 
 
 @app.command()
@@ -153,6 +145,7 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
     logger.info(
         f'✅ Best HyperParammeters: {json.dumps(study.best_trial.params, indent=2)} ✅')
 
+
 @app.command()
 def predict_emotion(prompt: str = None, run_id: str = None) -> None:
     """This function predicts the emotion of a prompt (text)
@@ -162,17 +155,20 @@ def predict_emotion(prompt: str = None, run_id: str = None) -> None:
         run_id (str, optional): run_id of the model to use. Defaults to None.
     """
     if not run_id:
-        run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read() ## TO-DO CHANGE PATH TO FINAL MODEL DIR
+        # TO-DO CHANGE PATH TO FINAL MODEL DIR
+        run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read()
 
     artifacts = load_artifacts(run_id=run_id)
 
     # Load weights
     bert = BERT(params=artifacts['params'])
     model = bert.model
-    model.load_weights(Path(config.MODEL_DIR, 'bert_model.hdf5')) ## TO-DO CHANGE PATH TO FINAL MODEL DIR
+    # TO-DO CHANGE PATH TO FINAL MODEL DIR
+    model.load_weights(Path(config.MODEL_REGISTORY, 'bert_model.hdf5'))
 
     # Predict
-    pred, prob = bert.predict(prompt=prompt, threshold=artifacts.params.threshold, model=model)
+    pred, prob = bert.predict(
+        prompt=prompt, threshold=artifacts.params.threshold, model=model)
     logger.info(f'🏁 Prediction: {pred} and probability {prob} 🏁')
 
     return pred, prob

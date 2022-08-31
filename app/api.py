@@ -106,7 +106,7 @@ def _predict(request: Request, payload: PredictPayload):
     # Load weights
     bert = BERT(params=artifacts.params)
     model = bert.model
-    model.load_weights(Path(config.MODEL_DIR, 'bert_model.hdf5')) ## TO-DO CHANGE PATH TO FINAL MODEL DIR
+    model.load_weights(Path(config.MODEL_REGISTORY, 'bert_model.hdf5')) ## TO-DO CHANGE PATH TO FINAL MODEL DIR
 
     # Predict
     pred, prob = bert.predict(prompt=texts, threshold=artifacts.params.threshold, model=model)
