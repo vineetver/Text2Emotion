@@ -30,8 +30,7 @@ def etl_data():
     logger.info('✅ Starting Data extraction, load and transform ✅')
 
     # Read the training, testing, and validation datasets
-    train_df, test_df, valid_df = read_dataset(
-        config.TRAIN_URL, config.TEST_URL, config.VALID_URL)
+    train_df, test_df, valid_df = read_dataset(config.TRAIN_URL, config.TEST_URL, config.VALID_URL)
 
     # Combine the training, testing, and validation datasets using concat
     df = combine_dataset(train_df, test_df, valid_df)
@@ -54,9 +53,7 @@ def etl_data():
     # one-hot encode the class labels
     df = one_hot_encode(df)
 
-    df.to_csv(Path(config.DATA_DIR, 'preprocessed.csv'),
-              sep='\t', encoding='utf-8')
-
+    df.to_csv(Path(config.DATA_DIR, 'preprocessed.csv'), sep='\t', encoding='utf-8')
     logger.info('✅ Data successfully extracted and transformed ✅')
 
 
@@ -73,8 +70,7 @@ def train_model(params_path: str = 'config/parameters.json', experiment_name: st
         test_run: whether to test the model or not
     """
     # Load data
-    df = pd.read_csv(Path(config.DATA_DIR, 'preprocessed.csv'),
-                     sep='\t', encoding='utf-8')
+    df = pd.read_csv(Path(config.DATA_DIR, 'preprocessed.csv'), sep='\t', encoding='utf-8')
 
     params = Namespace(**get_dict(filepath=params_path))
 
@@ -124,10 +120,8 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
 
     params = Namespace(**get_dict(filepath=params_path))
     pruner = optuna.pruners.MedianPruner(n_startup_trials=5, n_warmup_steps=5)
-    study = optuna.create_study(
-        study_name=experiment_name, direction='maximize', pruner=pruner)
-    mlflow_callback = MLflowCallback(
-        tracking_uri=mlflow.get_tracking_uri(), metric_name='f1')
+    study = optuna.create_study(study_name=experiment_name, direction='maximize', pruner=pruner)
+    mlflow_callback = MLflowCallback(tracking_uri=mlflow.get_tracking_uri(), metric_name='f1')
 
     logger.info('🏁 Starting Optimization 🏁')
     study.optimize(
@@ -142,8 +136,7 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
     params = {**params.__dict__, **study.best_trial.params}
     write_dict(params, filepath=params_path, cls=NumpyEncoder)
     logger.info(f'✅ Best value of F1 Score {study.best_trial.value} ✅')
-    logger.info(
-        f'✅ Best HyperParammeters: {json.dumps(study.best_trial.params, indent=2)} ✅')
+    logger.info(f'✅ Best HyperParammeters: {json.dumps(study.best_trial.params, indent=2)} ✅')
 
 
 @app.command()
@@ -157,18 +150,16 @@ def predict_emotion(prompt: str = None, run_id: str = None) -> None:
     if not run_id:
         # TO-DO CHANGE PATH TO FINAL MODEL DIR
         run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read()
-
     artifacts = load_artifacts(run_id=run_id)
 
     # Load weights
-    bert = BERT(params=artifacts['params'])
+    bert = BERT(params={'params': None})
     model = bert.model
     # TO-DO CHANGE PATH TO FINAL MODEL DIR
     model.load_weights(Path(config.MODEL_REGISTORY, 'bert_model.hdf5'))
 
     # Predict
-    pred, prob = bert.predict(
-        prompt=prompt, threshold=artifacts.params.threshold, model=model)
+    pred, prob = bert.predict(prompt=prompt, threshold=artifacts.params.threshold, model=model)
     logger.info(f'🏁 Prediction: {pred} and probability {prob} 🏁')
 
     return pred, prob

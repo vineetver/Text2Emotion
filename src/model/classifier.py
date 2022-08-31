@@ -121,11 +121,9 @@ class BERT(Models, ABC):
                   'token_type_ids': tokenized_input['token_type_ids']}
 
         if shuffle is not None:
-            tensor = tf.data.Dataset.from_tensor_slices(
-                (inputs, labels)).shuffle(shuffle).batch(self.params.batch_size).prefetch(1)
+            tensor = tf.data.Dataset.from_tensor_slices((inputs, labels)).shuffle(shuffle).batch(self.params.batch_size).prefetch(1)
         else:
-            tensor = tf.data.Dataset.from_tensor_slices(
-                (inputs, labels)).batch(self.params.batch_size).prefetch(1)
+            tensor = tf.data.Dataset.from_tensor_slices((inputs, labels)).batch(self.params.batch_size).prefetch(1)
 
         return tensor
 
@@ -159,12 +157,9 @@ class BERT(Models, ABC):
         bert = transformer_model.layers[0]
 
         # inputs
-        input_ids = Input(
-            shape=(self.params.max_length,), name='input_ids', dtype='int32')
-        attention_mask = Input(
-            shape=(self.params.max_length,), name='attention_mask', dtype='int32')
-        token_type_ids = Input(
-            shape=(self.params.max_length,), name='token_type_ids', dtype='int32')
+        input_ids = Input(shape=(self.params.max_length,), name='input_ids', dtype='int32')
+        attention_mask = Input(shape=(self.params.max_length,), name='attention_mask', dtype='int32')
+        token_type_ids = Input(shape=(self.params.max_length,), name='token_type_ids', dtype='int32')
         inputs = {'input_ids': input_ids, 'attention_mask': attention_mask,
                   'token_type_ids': token_type_ids}
 
@@ -197,12 +192,9 @@ class BERT(Models, ABC):
         test_tokenized, y_test = self.tokenize(df=test_df)
 
         # convert tokenized data to tensor
-        train_tensor = self.return_tensor(
-            tokenized_input=train_tokenized, labels=y_train, shuffle=5000)
-        val_tensor = self.return_tensor(
-            tokenized_input=val_tokenized, labels=y_val)
-        test_tensor = self.return_tensor(
-            tokenized_input=test_tokenized, labels=y_test)
+        train_tensor = self.return_tensor(tokenized_input=train_tokenized, labels=y_train, shuffle=5000)
+        val_tensor = self.return_tensor(tokenized_input=val_tokenized, labels=y_val)
+        test_tensor = self.return_tensor(tokenized_input=test_tokenized, labels=y_test)
 
         model = self.model
 
@@ -212,21 +204,16 @@ class BERT(Models, ABC):
             decay_steps=self.params.decay_steps,
         )
 
-        optimizer = tf.keras.optimizers.Adam(
-            learning_rate=linear_decay, clipnorm=0.1)
+        optimizer = tf.keras.optimizers.Adam(learning_rate=linear_decay, clipnorm=0.1)
         loss = tf.keras.losses.BinaryCrossentropy(from_logits=False)
-
         model.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
-
-        model.fit(
-            train_tensor, epochs=self.params.epochs, validation_data=val_tensor, verbose=1)
+        model.fit(train_tensor, epochs=self.params.epochs, validation_data=val_tensor, verbose=1)
 
         train_loss = model.evaluate(train_tensor, verbose=0)
         val_loss = model.evaluate(val_tensor, verbose=0)
 
         if not trial:
-            mlflow.log_metrics(
-                {'train_loss': train_loss[0], 'val_loss': val_loss[0]})
+            mlflow.log_metrics({'train_loss': train_loss[0], 'val_loss': val_loss[0]})
 
         if trial:
             trial.report(val_loss[0], step=1)
@@ -250,8 +237,7 @@ class BERT(Models, ABC):
             else:
                 continue
 
-        logger.info(
-            f'Found best threshold: {best_threshold} with f1 score: {best_f1}')
+        logger.info(f'Found best threshold: {best_threshold} with f1 score: {best_f1}')
 
         y_pred = np.where(pred > best_threshold, 1, 0)
 
@@ -280,15 +266,14 @@ class BERT(Models, ABC):
         """
         metrics = {'overall': {}, 'classes': {}}
 
-        overall_metrics = precision_recall_fscore_support(
-            y_true, y_pred, average='weighted', zero_division=0)
+        overall_metrics = precision_recall_fscore_support(y_true, y_pred, average='weighted', zero_division=0)
         metrics['overall']['precision'] = overall_metrics[0]
         metrics['overall']['recall'] = overall_metrics[1]
         metrics['overall']['f1'] = overall_metrics[2]
         metrics['overall']['num_samples'] = float(len(y_true))
 
-        class_metrics = precision_recall_fscore_support(
-            y_true, y_pred, average=None, zero_division=0)
+        class_metrics = precision_recall_fscore_support(y_true, y_pred, average=None, zero_division=0)
+
         for i, label in enumerate(n_labels):
             metrics['classes'][label] = {'precision': class_metrics[0][i],
                                          'recall': class_metrics[1][i],
