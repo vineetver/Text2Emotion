@@ -71,7 +71,7 @@ gunicorn -c app/gunicorn.py -k uvicorn.workers.UvicornWorker app.api:app  # prod
 
 ## Hyperparameter Choice
 
-The choice of hyperparameters is critical in training any machine learning model. I have tried various configurations, and this is the configuration that resulted in a 1% increase from the best model provided by the GoEmotions team, with a 65% f1-score on the test set `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`, `batch_size = 64`, `dropout = 0.1 to 0.25` and `PolynomialDecay` scheduler.
+The choice of hyperparameters is critical in training any machine learning model. I have tried various configurations, and this is the configuration that resulted in a 1% increase from the best model provided by the GoEmotions team, with a 66% f1-score on the test set `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`, `batch_size = 64`, `dropout = 0.1 to 0.25` and `PolynomialDecay` scheduler.
 
 ## About the Data
 
