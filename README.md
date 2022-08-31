@@ -95,12 +95,6 @@ optimism, pride, realization, relief, remorse, sadness, surprise.
 
 For more details about [GoEmotions](https://github.com/google-research/google-research/tree/master/goemotions)
 
-## Dependencies
-
-    $ pip install -r requirements.txt
-
-
-
 ## Running the tests
 
     py.test tests
