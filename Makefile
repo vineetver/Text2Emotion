@@ -5,7 +5,7 @@ SHELL = /bin/bash
 help:
 	@echo "Usage: make [target]"
 
-	@echo "Available targets:""
+	@echo "Available targets:"
 	@echo "venv        : Create a virtualenv"
 	@echo "clean       : Remove build artifacts"
 	@echo "test        : Execute unit and integration tests"
