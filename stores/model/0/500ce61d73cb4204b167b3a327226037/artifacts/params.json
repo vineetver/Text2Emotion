@@ -1,0 +1,11 @@
+{
+  "max_length": 33,
+  "batch_size": 32,
+  "shuffle": true,
+  "decay_steps": 345,
+  "end_learning_rate": 0,
+  "initial_learning_rate": 2e-05,
+  "clipnorm": 0.1,
+  "epochs": 1,
+  "threshold": 0.2699
+}
