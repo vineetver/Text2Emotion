@@ -13,7 +13,7 @@ and `PolynomialDecay` scheduler. The evaluation f1 score is 66%. The baseline pu
     Python>=3.7
     CUDA=11.x
     CUDA Enabled GPU
-    
+
 
 ## Setting up the environment
 
@@ -47,9 +47,11 @@ sudo apt-get install -f  # resolve dependency errors you saw earlier
 ```bash
 pip install -r requirements.txt
 ```
-## Workflow
+## Serving
 
 Documentation for the main.py is available by running the following command.
+
+### Command Line
 
 ```bash
 python main/main.py --help
@@ -60,18 +62,38 @@ python main/main.py etl-data
 python main/main.py train-model --params_file='config/parammeters.json' --experiment_name='fine-tuned-bert' --run_name='PolynomailDecay'
 python main/main.py optimize --params_file='config/parammeters.json' --experiment_name='optimization' --n_trials=10
 python main/main.py predict-emotion --prompt='I am very happy'
+# Predict more multiple texts by seperating them with a comma
+python main/main.py predict-emotion --prompt='I am very happy, This is the worst muffin ive ever had'
 ```
 
-## API
+### RESTful API
 
 ```bash
 uvicorn app.api:app --host 127.0.0.1 --port 8080 --reload --reload-dir src --reload-dir app  # dev
 gunicorn -c app/gunicorn.py -k uvicorn.workers.UvicornWorker app.api:app  # production
 ```
 
-## Hyperparameter Choice
+#### Send Payload
 
-The choice of hyperparameters is critical in training any machine learning model. I have tried various configurations, and this is the configuration that resulted in a 1% increase from the best model provided by the GoEmotions team, with a 66% f1-score on the test set `tf.keras.optimizers.Adam` optimizer, `learning_rate = 5e-5`, `batch_size = 64`, `dropout = 0.1 to 0.25` and `PolynomialDecay` scheduler.
+```bash
+curl -X 'POST' \
+  'http://127.0.0.1:8080/predict' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "texts": [
+    {
+      "text": "A Ukrainian woman who escaped Russian assault on Mariupol says troops were targeting apartment buildings as if they were playing a computer game"
+    },
+    {
+      "text": "I often go to parks to walk and distress and enjoy nature"
+    },
+    {
+      "text": "This is the worst muffin ive ever had"
+    }
+  ]
+}'
+```
 
 ## About the Data
 
@@ -95,6 +117,10 @@ optimism, pride, realization, relief, remorse, sadness, surprise.
 
 For more details about [GoEmotions](https://github.com/google-research/google-research/tree/master/goemotions)
 
+## Hyperparameter Choice
+
+The choice of hyperparameters is critical in training any machine learning model. I have tried various configurations, and this is the configuration that resulted in a 1% increase from the best model provided by the GoEmotions team, with a 66% f1-score on the test set `tf.keras.optimizers.Adam` optimizer, `learning_rate = 2e-5`, `batch_size = 32`, `clipnorm = 0.1` and `PolynomialDecay` scheduler.
+
 ## Running the tests
 
     py.test tests
@@ -103,8 +129,8 @@ For more details about [GoEmotions](https://github.com/google-research/google-re
 
 - [x] Prototype
 - [x] Pipeline
-- [ ] Web application
-- [ ] Deployment
+- [x] Web application
+- [x] Deployment
 
 ## License
 

@@ -74,10 +74,12 @@ def train_model(params_path: str = 'config/parameters.json', experiment_name: st
 
     params = Namespace(**get_dict(filepath=params_path))
 
+    # set up mlflow
     mlflow.set_experiment(experiment_name)
     with mlflow.start_run(run_name=run_name):
         run_id = mlflow.active_run().info.run_id
         logger.info(f'🏁 Starting Run ID: {run_id} 🏁')
+        # Start training
         bert = BERT(params=params)
         artifacts = bert.fit(df)
         performance = artifacts['metrics']
@@ -87,6 +89,7 @@ def train_model(params_path: str = 'config/parameters.json', experiment_name: st
         mlflow.log_metrics({'recall': performance['overall']['recall']})
         mlflow.log_metrics({'f1': performance['overall']['f1']})
 
+        # Save metrics, params, model and artifacts
         experiment_id = mlflow.get_run(run_id=run_id).info.experiment_id
         artifacts_path = Path(config.MODEL_REGISTRY, experiment_id, run_id, 'artifacts')
         write_dict(vars(artifacts['params']), Path(artifacts_path, 'params.json'), cls=NumpyEncoder)
@@ -121,6 +124,7 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
     study = optuna.create_study(study_name=experiment_name, direction='maximize', pruner=pruner)
     mlflow_callback = MLflowCallback(tracking_uri=mlflow.get_tracking_uri(), metric_name='f1')
 
+    # optimize the model's hyperparameters
     logger.info('🏁 Starting Optimization 🏁')
     study.optimize(
         lambda trial: optimization.objective(params, df, trial),
@@ -129,6 +133,7 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
     )
     logger.info('🏁 Optimization Complete 🏁')
 
+    # log the best hyperparameters
     trials_df = study.trials_dataframe()
     trials_df = trials_df.sort_values(['user_attrs_f1'], ascending=False)
     params = {**params.__dict__, **study.best_trial.params}
@@ -153,6 +158,7 @@ def predict_emotion(prompt: str = None, run_id: str = None) -> None:
     if not run_id:
         run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read()
 
+    # Load artifacts
     artifacts = load_artifacts(run_id=run_id)
 
     # Load weights
@@ -160,6 +166,7 @@ def predict_emotion(prompt: str = None, run_id: str = None) -> None:
     model = bert.model
     model.load_weights(Path(artifacts['artifacts_dir'], 'bert_model.hdf5'))
 
+    # Split comma separated prompt into list of sentences
     PROMPT = [text for text in prompt.split(',') if text]
 
     # Predict

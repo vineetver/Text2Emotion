@@ -1,6 +1,6 @@
 {
   "max_length": 33,
-  "batch_size": 128,
+  "batch_size": 32,
   "shuffle": true,
   "decay_steps": 345,
   "end_learning_rate": 0,

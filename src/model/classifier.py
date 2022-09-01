@@ -49,13 +49,19 @@ class Models(ABC):
         """
         pass
 
+    def build_model(self):
+        """
+        Build the model.
+        """
+        pass
+
     def fit(self, df: pd.DataFrame):
         """
         Fit the model to the training data.
         """
         pass
 
-    def evaluate(self, X, Y):
+    def prediction(self, X, Y):
         """
         Evaluate the model on the testing data.
         """
@@ -161,8 +167,7 @@ class BERT(Models, ABC):
         input_ids = Input(shape=(self.params.max_length,), name='input_ids', dtype='int32')
         attention_mask = Input(shape=(self.params.max_length,), name='attention_mask', dtype='int32')
         token_type_ids = Input(shape=(self.params.max_length,), name='token_type_ids', dtype='int32')
-        inputs = {'input_ids': input_ids, 'attention_mask': attention_mask,
-                  'token_type_ids': token_type_ids}
+        inputs = {'input_ids': input_ids, 'attention_mask': attention_mask, 'token_type_ids': token_type_ids}
 
         # layers
         bert_model = bert(inputs)[1]
