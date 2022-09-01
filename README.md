@@ -49,9 +49,9 @@ pip install -r requirements.txt
 ```
 ## Serving
 
-Documentation for the main.py is available by running the following command.
-
 ### Command Line
+
+Documentation for the main.py is available by running the following command.
 
 ```bash
 python main/main.py --help
