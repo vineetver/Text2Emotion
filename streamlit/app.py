@@ -21,7 +21,7 @@ st.write(df)
 # Performance
 st.header('Performance')
 st.write('Performance is measured by running `main.py`')
-performance = get_dict(config.CONFIG_DIR, 'performance.json')
+performance = get_dict(config.CONFIG_DIR, 'metrics.json')
 st.text('Overall Model Performance')
 st.write(performance.overall)
 tag = st.selectbox('Select a class: ', list(performance.classes.keys()))

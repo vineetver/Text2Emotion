@@ -92,12 +92,11 @@ def train_model(params_path: str = 'config/parameters.json', experiment_name: st
         write_dict(vars(artifacts['params']), Path(artifacts_path, 'params.json'), cls=NumpyEncoder)
         artifacts['model'].save(Path(artifacts_path, 'bert_model.hdf5'))
         write_dict(performance, Path(artifacts_path, 'metrics.json'))
-        mlflow.log_artifact(str(artifacts_path))
+        mlflow.log_artifacts(str(artifacts_path))
 
         if not test_run:
             open(Path(config.CONFIG_DIR, 'run_id.txt'), 'w').write(run_id)
-            write_dict(performance, Path(
-                config.CONFIG_DIR, 'performance.json'))
+            write_dict(performance, Path(config.CONFIG_DIR, 'metrics.json'))
 
         logger.info(f'🏁 Run ID: {run_id} Finished 🏁')
 
@@ -115,8 +114,7 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
         None
     """
     # Load data
-    df = pd.read_csv(Path(config.DATA_DIR, 'preprocessed.csv'),
-                     sep='\t', encoding='utf-8')
+    df = pd.read_csv(Path(config.DATA_DIR, 'preprocessed.csv'), sep='\t', encoding='utf-8')
 
     params = Namespace(**get_dict(filepath=params_path))
     pruner = optuna.pruners.MedianPruner(n_startup_trials=5, n_warmup_steps=5)
@@ -141,28 +139,33 @@ def optimize(params_path: str = 'config/parammeters.json', experiment_name: str 
 
 @app.command()
 def predict_emotion(prompt: str = None, run_id: str = None) -> None:
-    """This function predicts the emotion of a prompt (text)
+    """
+        Predict the emotion of the text.
 
-    Args:
-        prompt (str, optional): prompt to predict the emotion of. Defaults to None.
-        run_id (str, optional): run_id of the model to use. Defaults to None.
+        Args:
+            prompt: text
+            threshold: threshold for the prediction
+            model: trained bert model
+
+        Returns:
+            emotion: emotion
     """
     if not run_id:
-        # TO-DO CHANGE PATH TO FINAL MODEL DIR
         run_id = open(Path(config.CONFIG_DIR, 'run_id.txt')).read()
+
     artifacts = load_artifacts(run_id=run_id)
 
     # Load weights
-    bert = BERT(params={'params': None})
+    bert = BERT(params=artifacts['params'])
     model = bert.model
-    # TO-DO CHANGE PATH TO FINAL MODEL DIR
-    model.load_weights(Path(config.MODEL_REGISTORY, 'bert_model.hdf5'))
+    model.load_weights(Path(artifacts['artifacts_dir'], 'bert_model.hdf5'))
+
+    PROMPT = [text for text in prompt.split(',') if text]
 
     # Predict
-    pred, prob = bert.predict(prompt=prompt, threshold=artifacts.params.threshold, model=model)
-    logger.info(f'🏁 Prediction: {pred} and probability {prob} 🏁')
-
-    return pred, prob
+    pred, prob = bert.prediction(prompt=PROMPT, threshold=artifacts['params'].threshold, model=model)
+    logger.info(f'🏁 Prediction: {pred} 🏁\n')
+    logger.info(f'🏁 Probability: {prob} 🏁\n')
 
 
 if __name__ == '__main__':

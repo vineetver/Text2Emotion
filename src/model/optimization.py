@@ -27,17 +27,15 @@ def load_artifacts(run_id: str = None) -> dict:
 
     # locate artifacts
     experiment_id = mlflow.get_run(run_id=run_id).info.experiment_id
-    artifacts_dir = Path(config.MODEL_REGISTRY,
-                         experiment_id, run_id, 'artifacts')
+    artifacts_dir = Path(config.MODEL_REGISTRY, experiment_id, run_id, 'artifacts')
 
     # Load Data
     params = Namespace(**get_dict(filepath=Path(artifacts_dir, 'params.json')))
-    model = joblib.load(Path(artifacts_dir, 'model.pkl'))
-    performance = joblib.load(Path(artifacts_dir, 'performance.json'))
+    performance = get_dict(Path(artifacts_dir, 'metrics.json'))
 
     return {
         'params': params,
-        'model': model,
+        'artifacts_dir': artifacts_dir,
         'performance': performance
     }
 
@@ -55,8 +53,7 @@ def objective(params: Namespace, df: pd.DataFrame, trial: optuna.trial.Trial) ->
         float: metric value to be used as score
     """
 
-    params.initial_learning_rate = trial.suggest_float(
-        'learning_rate', 3e-6, 1e0)
+    params.initial_learning_rate = trial.suggest_float('learning_rate', 3e-6, 1e0)
     params.clipnorm = trial.suggest_float('clipnorm', 0.01, 1)
     params.decay_steps = trial.suggest_int('decay_steps', 1, 600)
 

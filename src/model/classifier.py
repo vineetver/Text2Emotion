@@ -121,7 +121,8 @@ class BERT(Models, ABC):
                   'token_type_ids': tokenized_input['token_type_ids']}
 
         if shuffle is not None:
-            tensor = tf.data.Dataset.from_tensor_slices((inputs, labels)).shuffle(shuffle).batch(self.params.batch_size).prefetch(1)
+            tensor = tf.data.Dataset.from_tensor_slices((inputs, labels)).shuffle(
+                shuffle).batch(self.params.batch_size).prefetch(1)
         else:
             tensor = tf.data.Dataset.from_tensor_slices((inputs, labels)).batch(self.params.batch_size).prefetch(1)
 
@@ -283,7 +284,7 @@ class BERT(Models, ABC):
 
         return metrics
 
-    def predict(self, prompt: List[str], threshold: float, model: Model) -> Tuple[pd.DataFrame, pd.DataFrame]:
+    def prediction(self, prompt: List[str], threshold: float, model: Model) -> Tuple[pd.DataFrame, pd.DataFrame]:
         """
         Predict the emotion of the text.
 

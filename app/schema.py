@@ -5,7 +5,7 @@ from pydantic import BaseModel, validator
 
 
 class Text(BaseModel):
-    text: str = Query(None, min_length=3, max_length=50)
+    text: str = Query(None, min_length=3, max_length=400)
 
 
 class PredictPayload(BaseModel):

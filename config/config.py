@@ -19,7 +19,7 @@ BLOB_STORE.mkdir(parents=True, exist_ok=True)
 LOGS_DIR.mkdir(parents=True, exist_ok=True)
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-mlflow.set_tracking_uri("file://" + str(MODEL_REGISTRY))
+mlflow.set_tracking_uri("file://" + str(MODEL_REGISTRY.absolute()))
 
 TRAIN_URL = 'https://github.com/google-research/google-research/raw/master/goemotions/data/train.tsv'
 VALID_URL = 'https://github.com/google-research/google-research/raw/master/goemotions/data/dev.tsv'

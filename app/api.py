@@ -15,6 +15,7 @@ app = FastAPI(
     version='0.0.1'
 )
 
+
 @app.on_event('startup')
 def load_artifacts():
     global artifacts
@@ -24,17 +25,18 @@ def load_artifacts():
     logger.info(f'✅ Run ID: {run_id} ✅')
     logger.info(f'✅ Ready for inference ✅')
 
+
 def construct_response(f):
     """Construct a JSON response for an endpoint"""
     @wraps(f)
     def wrap(request: Request, *args, **kwargs) -> dict:
         results = f(request, *args, **kwargs)
         response = {
-            'message'    : results['message'],
-            'method'     : request.method,
+            'message': results['message'],
+            'method': request.method,
             'status-code': results['status-code'],
-            'timestamp'  : datetime.now().isoformat(),
-            'url'        : request.url.url,
+            'timestamp': datetime.now().isoformat(),
+            'url': request.url._url,
         }
         if 'data' in results:
             response['data'] = results['data']
@@ -69,6 +71,7 @@ def _performance(request: Request):
 
     return response
 
+
 @app.get('/params', tags=['Parameters'])
 @construct_response
 def _params(request: Request):
@@ -82,6 +85,7 @@ def _params(request: Request):
     }
 
     return response
+
 
 @app.get('/params/{param}', tags=['Parameters'])
 @construct_response
@@ -97,28 +101,31 @@ def _param(request: Request, param: str):
 
     return response
 
+
 @app.post('/predict', tags=['Predict'])
 @construct_response
 def _predict(request: Request, payload: PredictPayload):
     """Predict emotion from text"""
-    texts = [item.text for item in payload.text]
+    texts = [item.text for item in payload.texts]
 
     # Load weights
-    bert = BERT(params=artifacts.params)
+    bert = BERT(params=artifacts['params'])
     model = bert.model
-    model.load_weights(Path(config.MODEL_REGISTORY, 'bert_model.hdf5')) ## TO-DO CHANGE PATH TO FINAL MODEL DIR
+    model.load_weights(Path(artifacts['artifacts_dir'], 'bert_model.hdf5'))
 
     # Predict
-    pred, prob = bert.predict(prompt=texts, threshold=artifacts.params.threshold, model=model)
+    pred, prob = bert.prediction(prompt=texts, threshold=artifacts['params'].threshold, model=model)
     logger.info(f'🏁 Prediction: {pred} and probability {prob} 🏁')
 
+    pred1 = pred.values.tolist()
+    prob1 = prob.values.tolist()
     response = {
         'message': HTTPStatus.OK.phrase,
         'status-code': HTTPStatus.OK,
         'data': {
             'prediction': {
-                'pred': pred,
-                'prob': prob
+                'pred': pred1,
+                'prob': prob1
             }
         }
     }
