@@ -36,7 +36,7 @@ def load_artifacts(run_id: str = None) -> dict:
     return {
         'params': params,
         'artifacts_dir': artifacts_dir,
-        'performance': performance
+        'metrics': performance
     }
 
 

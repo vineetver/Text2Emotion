@@ -58,7 +58,7 @@ def etl_data():
 
 
 @app.command()
-def train_model(params_path: str = 'config/parameters.json', experiment_name: str = 'bert_model', run_name: str = 'PolynomialDecay',
+def train_model(params_path: str = 'config/params.json', experiment_name: str = 'bert_model', run_name: str = 'PolynomialDecay',
                 test_run: bool = False) -> None:
     """
     Trains a model with the provided parameters
@@ -105,7 +105,7 @@ def train_model(params_path: str = 'config/parameters.json', experiment_name: st
 
 
 @app.command()
-def optimize(params_path: str = 'config/parammeters.json', experiment_name: str = 'optimization', n_trails: int = 10) -> None:
+def optimize(params_path: str = 'config/params.json', experiment_name: str = 'optimization', n_trails: int = 10) -> None:
     """This function optimizes the model's hyperparameters
 
     Args:
