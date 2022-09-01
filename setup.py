@@ -5,6 +5,9 @@ BASE_DIR = Path(__file__).parent
 with open(Path(BASE_DIR, "requirements.txt"), "r") as file:
     required_packages = [ln.strip() for ln in file.readlines()]
 
+test = ['pytest==7.1.2']
+docs = ['mkdocs==1.3.0', 'mkdocstrings==0.18.1']
+
 setup(
     name='text2emotion',
     version='0.1',
@@ -15,4 +18,7 @@ setup(
     python_requires='==3.8',
     packages=find_namespace_packages(exclude=['test']),
     install_requires=[required_packages],
+    extra_require={
+        'dev': test + docs
+    }
 )

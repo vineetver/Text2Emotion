@@ -1,2 +1,6 @@
 [tool.autopep8]
 max_line_length = 120
+
+
+[tool.pytest.ini_options]
+python_files = "test_*.py"
